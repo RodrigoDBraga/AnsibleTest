@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Monitoring 
 
 ## Grafana Dashboard 
