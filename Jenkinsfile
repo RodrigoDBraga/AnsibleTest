@@ -5,31 +5,34 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     stages {
-        stage('Navigate to Local Repository') {
+        stage('Checkout Repository') {
             steps {
-                dir('E:/Programas/IT/Git/changed-monitoring-main') {
-                    echo "Navigated to local repository"
+                git 'https://github.com/RodrigoDBraga/AnsibleTest.git'
+            }
+        }
+        stage('Fetch IP and Institution Name') {
+            steps {
+                script {
+                    def output = sh(script: "python3 scripts/get_ip_and_name.py", returnStdout: true).trim()
+                    def (server_ip, server_name) = output.split(',')
+                    env.SERVER_IP = server_ip
+                    env.SERVER_NAME = server_name
                 }
             }
         }
-        stage('Update Configuration') {
+        stage('Run Ansible Playbook') {
             steps {
-                dir('E:/Programas/IT/Git/changed-monitoring-main') {
-                    script {
-                        def configFilePath = 'monitoring-main/client/configs/otel-collector-config.yaml'
-                        def config = readFile configFilePath
-                        config = config.replace("{SERVER_IP}", params.SERVER_IP)
-                        writeFile file: configFilePath, text: config
-                    }
-                }
+                ansiblePlaybook(
+                    playbook: 'playbooks/playbook.yml',
+                    inventory: 'playbooks/inventory.ini',
+                    extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
+                )
             }
         }
         stage('Copy to DigitalOcean Machine') {
             steps {
-                dir('E:/Programas/IT/Git/changed-monitoring-main') {
-                    sshagent(['DigitalOceanSSHKey']) {
-                        sh 'scp -r * root@209.97.183.9:/home/iprolepsis/monitoring'
-                    }
+                sshagent(['DigitalOceanSSHKey']) {
+                    sh 'scp -r * root@209.97.183.9:/home/iprolepsis/monitoring'
                 }
             }
         }
