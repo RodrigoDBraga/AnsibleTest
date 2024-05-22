@@ -1,0 +1,16 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+processors:
+  batch:
+exporters:
+  otlp:
+    endpoint: "{{ server_ip }}"
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
