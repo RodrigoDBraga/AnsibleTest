@@ -40,7 +40,8 @@ pipeline {
                 ansiblePlaybook(
                     playbook: 'playbooks/playbook.yml',
                     inventory: 'playbooks/inventory.ini',
-                    extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
+                    //extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
+                    extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
                 )
                 echo "Fetched IP: ${env.SERVER_IP}"
             }
