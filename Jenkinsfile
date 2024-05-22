@@ -24,7 +24,7 @@ pipeline {
         stage('Fetch IP Address') {
             steps {
                 script {
-                    def ip_address = sh(script: "hostname -I | awk '{print $1}'", returnStdout: true).trim()
+                    def ip_address = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim()
                     env.SERVER_IP = ip_address
                     echo "Fetched IP: ${env.SERVER_IP}"
                 }
