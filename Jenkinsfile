@@ -37,11 +37,17 @@ pipeline {
         stage('Run Ansible Playbook') {
             steps {
                 echo "Fetched IP: ${env.SERVER_IP}"
+                /*
                 ansiblePlaybook(
                     playbook: 'playbooks/playbook.yml',
                     inventory: 'playbooks/inventory.ini',
-                    //extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
-                    extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
+                    extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
+                    //extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
+                )
+                */
+                ansiblePlaybook(
+                    playbook: 'playbooks/playbook.yml',
+                    inventory: 'playbooks/inventory.ini'
                 )
                 echo "Fetched IP: ${env.SERVER_IP}"
             }
