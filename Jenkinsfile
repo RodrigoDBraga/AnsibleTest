@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout Repository') {
             steps {
-                git 'https://github.com/RodrigoDBraga/AnsibleTest.git'
+                git 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
         stage('Fetch IP and Institution Name') {
