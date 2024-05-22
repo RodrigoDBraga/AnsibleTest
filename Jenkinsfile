@@ -5,11 +5,7 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     stages {
-        stage('Checkout Repository') {
-            steps {
-                git 'https://github.com/RodrigoDBraga/AnsibleTest'
-            }
-        }
+        
         stage('Fetch IP and Institution Name') {
             steps {
                 script {
