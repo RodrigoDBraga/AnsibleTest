@@ -26,8 +26,9 @@ pipeline {
             steps {
                 script {
                     def ip_address = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim()
-                    if (ip_address == 172.17.0.2):
-                        ip_address = 192.168.1.19
+                    if (ip_address == '172.17.0.2') {
+                        ip_address = '192.168.1.19'
+                    }
                     env.SERVER_IP = ip_address
                     echo "Fetched IP: ${env.SERVER_IP}"
                 }
