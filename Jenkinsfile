@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('Run Ansible Playbook') {
+        /*stage('Run Ansible Playbook') {
             steps {
                 ansiblePlaybook(
                     playbook: 'playbooks/playbook.yml',
@@ -47,6 +47,28 @@ pipeline {
             steps {
                 sshagent(['DigitalOceanSSHKey']) {
                     sh 'scp -r * root@209.97.183.9:/home/iprolepsis/monitoring'
+                }
+            }
+        }*/
+        stage('Run Ansible Playbook') {
+            steps {
+                script {
+                    def playbookSuccess = true
+                    try {
+                        ansiblePlaybook(
+                            playbook: 'playbooks/playbook.yml',
+                            inventory: 'playbooks/inventory.ini',
+                            extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
+                        )
+                    } catch (Exception e) {
+                        playbookSuccess = false
+                        echo "Ansible Playbook execution failed: ${e.message}"
+                    }
+                    if (playbookSuccess) {
+                        echo 'Ansible Playbook executed successfully.'
+                    } else {
+                        error('Ansible Playbook execution failed.')
+                    }
                 }
             }
         }
