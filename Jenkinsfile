@@ -5,7 +5,11 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     stages {
-        
+        /*stage('Checkout Repository') {
+            steps {
+                git 'https://github.com/RodrigoDBraga/AnsibleTest'
+            }
+        }
         stage('Fetch IP and Institution Name') {
             steps {
                 script {
@@ -13,6 +17,15 @@ pipeline {
                     def (server_ip, server_name) = output.split(',')
                     env.SERVER_IP = server_ip
                     env.SERVER_NAME = server_name
+                }
+            }
+        }*/
+        stage('Fetch IP Address') {
+            steps {
+                script {
+                    def ip_address = sh(script: "hostname -I | awk '{print $1}'", returnStdout: true).trim()
+                    env.SERVER_IP = ip_address
+                    echo "Fetched IP: ${env.SERVER_IP}"
                 }
             }
         }
