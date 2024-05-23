@@ -56,14 +56,14 @@ pipeline {
                     extras: '--extra-vars "server_name=${env.SERVER_NAME} server_ip=${env.SERVER_IP}"'
                     //extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
                 )
-                */
-                sh 'echo $PATH'
-                sh 'pwd && ls -ltr'
-                sh 'find $JENKINS_HOME -name ansible -type d'
                 sh 'find /usr -name ansible -type d'
                 sh 'find /var/jenkins_home/plugins -name ansible -type f'
                 sh 'sudo find / -name ansible -type f'
                 sh 'sudo find / -name ansible -type d'
+                */
+                sh 'echo $PATH'
+                sh 'pwd && ls -ltr'
+                sh 'find $JENKINS_HOME -name ansible -type d'
                 println "Ansible installation directory: ${ansible.home}"
                 sh 'ansible --version'
                 sh 'which ansible-playbook'
