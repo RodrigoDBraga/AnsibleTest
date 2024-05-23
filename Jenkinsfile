@@ -75,6 +75,7 @@ pipeline {
                     plugins.each { plugin ->
                         echo "Plugin: ${plugin.getShortName()} (${plugin.getVersion()})"
                     }
+                }
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
                 //sh 'ansible --version'
                 echo "3"
