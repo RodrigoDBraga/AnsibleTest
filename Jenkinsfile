@@ -5,6 +5,21 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     stages {
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    // Check if ansible is installed
+                    def ansibleCheck = sh(script: 'which ansible-playbook', returnStatus: true)
+                    
+                    if (ansibleCheck != 0) {
+                        // Ansible not found, attempt to install it
+                        sh 'sudo apt-get update'
+                        sh 'sudo apt-get install -y ansible'
+                    }
+                }
+            }
+        }
+        
         /*
         stage('Checkout Repository') {
             steps {
