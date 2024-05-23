@@ -70,7 +70,7 @@ pipeline {
                 echo "1"
                 sh 'find $JENKINS_HOME -name ansible -type d'
                 echo "2"
-                sh 'find $JENKINS_HOME -name ansible-playbook -type d'
+                sh 'find $JENKINS_HOME -name ansible-playbook'
                 echo "3"
                 withEnv(["PATH+ANSIBLE=/var/jenkins_home/plugins/ansible"]) {
                     ansiblePlaybook(
