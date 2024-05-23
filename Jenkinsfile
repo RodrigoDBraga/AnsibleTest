@@ -57,11 +57,10 @@ pipeline {
                     //extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
                 )
                 */
-                sh 'find / -name ansible -type f'
-                println "Ansible installation directory: ${ansible.home}"
-                sh 'ansible --version'
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
+                sh 'find / -name ansible -type f'
+                println "Ansible installation directory: ${ansible.home}"
                 sh 'ansible --version'
                 sh 'which ansible-playbook'
                 ansiblePlaybook(
