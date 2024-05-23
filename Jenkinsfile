@@ -71,12 +71,14 @@ pipeline {
                 sh 'find $JENKINS_HOME -name ansible -type d'
                 echo "2"
                 sh 'find $JENKINS_HOME -name ansiblePlaybook'
-                def files = findFiles() 
-                    
-                files.each{ f -> 
-                        if(f.directory) {
-                            echo "This is directory: ${f.name} "
-                        }
+                script {
+                    def files = findFiles() 
+                        
+                    files.each{ f -> 
+                            if(f.directory) {
+                                echo "This is directory: ${f.name} "
+                            }
+                    }
                 }
                 echo "3"
                 withEnv(["PATH+ANSIBLE=/var/jenkins_home/plugins/ansible"]) {
