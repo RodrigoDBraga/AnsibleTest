@@ -34,6 +34,18 @@ pipeline {
                 }
             }
         }
+        /*
+        stage('Send IP to Monitoring Server') {
+            steps {
+                script {
+                    // Replace with the actual URL of your monitoring server
+                    def monitoring_server_url = "http://your-monitoring-server.com/api/receive_ip" //still need to change this ip
+                    sh "curl -X POST ${monitoring_server_url} -d 'ip=${env.SERVER_IP}'"
+                }
+            }
+        }
+        */
+
         stage('Run Ansible Playbook') {
             steps {
                 echo "Fetched IP: ${env.SERVER_IP}"
@@ -49,7 +61,9 @@ pipeline {
                     playbook: 'playbooks/playbook.yml',
                     inventory: 'playbooks/inventory.ini'
                 )*/
+                //$ ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini --extra-vars server_ip=${env.SERVER_IP}
                 withEnv(["PATH+ANSIBLE=/usr/local/bin"]) {
+                    ansible-playbook --version
                     ansiblePlaybook(
                         playbook: 'playbooks/playbook.yml',
                         inventory: 'playbooks/inventory.ini',
