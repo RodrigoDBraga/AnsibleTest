@@ -57,13 +57,9 @@ pipeline {
                     //extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
                 )
                 */
-                /*ansiblePlaybook(
-                    playbook: 'playbooks/playbook.yml',
-                    inventory: 'playbooks/inventory.ini'
-                )*/
-                //$ ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini --extra-vars server_ip=${env.SERVER_IP}
                 withEnv(["PATH+ANSIBLE=/usr/local/bin"]) {
                     sh 'echo $PATH'
+                    sh 'pwd && ls -ltr'
                     sh 'ansible --version'
                     sh 'which ansible-playbook'
                     ansiblePlaybook(
