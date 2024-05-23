@@ -59,15 +59,15 @@ pipeline {
                 */
                 
                 sh 'echo $PATH'
-                sh 'pwd && ls -ltr'
-                sh 'ansible --version'
-                sh 'which ansible-playbook'
-                ansiblePlaybook(
+                    sh 'pwd && ls -ltr'
+                    sh 'ansible --version'
+                    sh 'which ansible-playbook'
+                    ansiblePlaybook(
                         playbook: 'playbooks/playbook.yml',
                         inventory: 'playbooks/inventory.ini',
                         extras: '--extra-vars "server_ip=${env.SERVER_IP}"' // can also put here the server_name depending on what we are doing
                     )
-                }
+                
                 echo "Fetched IP: ${env.SERVER_IP}"
             }
         }
