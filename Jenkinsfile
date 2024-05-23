@@ -79,6 +79,7 @@ pipeline {
                             break
                         }
                 }
+                }
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
                 //sh 'ansible --version'
                 echo "3"
