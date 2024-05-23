@@ -49,7 +49,7 @@ pipeline {
 
         stage('Run Ansible Playbook') {
             steps {
-                echo "1"//"Fetched IP: ${env.SERVER_IP}"
+                echo "2"//"Fetched IP: ${env.SERVER_IP}"
                 /*
                 ansiblePlaybook(
                     playbook: 'playbooks/playbook.yml',
@@ -67,8 +67,11 @@ pipeline {
                 */
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
+                echo "1"
                 sh 'find $JENKINS_HOME -name ansible -type d'
-                sh 'which ansible-playbook'
+                echo "1"
+                sh 'find /var/jenkins_home/plugins/ansible -name ansible-playbook'
+                echo "1"
                 withEnv(["PATH+ANSIBLE=/var/jenkins_home/plugins/ansible"]) {
                     ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
