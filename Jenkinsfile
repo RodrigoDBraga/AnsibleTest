@@ -60,13 +60,13 @@ pipeline {
                 sh 'find /var/jenkins_home/plugins -name ansible -type f'
                 sh 'sudo find / -name ansible -type f'
                 sh 'sudo find / -name ansible -type d'
+                println "Ansible installation directory: ${ansible.home}"
+                sh 'ansible --version'
+                sh 'which ansible-playbook'
                 */
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
                 sh 'find $JENKINS_HOME -name ansible -type d'
-                println "Ansible installation directory: ${ansible.home}"
-                sh 'ansible --version'
-                sh 'which ansible-playbook'
                 ansiblePlaybook(
                         playbook: 'playbooks/playbook.yml',
                         inventory: 'playbooks/inventory.ini',
