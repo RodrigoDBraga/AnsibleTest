@@ -45,10 +45,17 @@ pipeline {
                     //extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
                 )
                 */
-                ansiblePlaybook(
+                /*ansiblePlaybook(
                     playbook: 'playbooks/playbook.yml',
                     inventory: 'playbooks/inventory.ini'
-                )
+                )*/
+                withEnv(["PATH+ANSIBLE=/usr/local/bin"]) {
+                    ansiblePlaybook(
+                        playbook: 'playbooks/playbook.yml',
+                        inventory: 'playbooks/inventory.ini',
+                        extras: '--extra-vars "server_ip=${env.SERVER_IP}"'
+                    )
+                }
                 echo "Fetched IP: ${env.SERVER_IP}"
             }
         }
