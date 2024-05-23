@@ -68,10 +68,15 @@ pipeline {
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
                 echo "1"
-                sh 'find $JENKINS_HOME -name ansible -type d'
+                sh 'find $JENKINS_HOME -name ansible -type d'               
                 echo "2"
+                script {
+                    def plugins = Jenkins.instance.pluginManager.plugins
+                    plugins.each { plugin ->
+                        echo "Plugin: ${plugin.getShortName()} (${plugin.getVersion()})"
+                    }
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
-                sh 'ansible --version'
+                //sh 'ansible --version'
                 echo "3"
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
@@ -80,7 +85,6 @@ pipeline {
                 )
                 
                 echo "4"
-                
                 
                 echo "Fetched IP: ${env.SERVER_IP}"
             }
