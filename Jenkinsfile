@@ -68,6 +68,7 @@ pipeline {
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
                 sh 'find $JENKINS_HOME -name ansible -type d'
+                sh 'which ansible-playbook'
                 withEnv(["PATH+ANSIBLE=/var/jenkins_home/plugins/ansible"]) {
                     ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
