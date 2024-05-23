@@ -71,6 +71,7 @@ pipeline {
                 sh 'find $JENKINS_HOME -name ansible -type d'
                 echo "2"
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
+                sh 'ansible --version'
                 echo "3"
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
