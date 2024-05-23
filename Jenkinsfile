@@ -71,23 +71,14 @@ pipeline {
                 sh 'find $JENKINS_HOME -name ansible -type d'
                 echo "2"
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
-                script {
-                    def files = findFiles() 
-                        
-                    files.each{ f -> 
-                            if(f.directory) {
-                                echo "This is directory: ${f.name} "
-                            }
-                    }
-                }
                 echo "3"
-                withEnv(["PATH+ANSIBLE=/var/jenkins_home/plugins/ansible"]) {
-                    ansiblePlaybook(
+                ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',
                             extras: '--extra-vars "server_ip=${env.SERVER_IP}"' // can also put here the server_name depending on what we are doing
-                    )
-                }
+                )
+                
+                echo "4"
                 
                 
                 echo "Fetched IP: ${env.SERVER_IP}"
