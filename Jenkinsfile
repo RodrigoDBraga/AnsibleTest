@@ -5,6 +5,7 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     stages {
+        /*
         stage('Prepare Environment') {
             steps {
                 script {
@@ -14,10 +15,15 @@ pipeline {
                     sh 'apt-get update'
                     sh 'apt-get install -y ansible'
                     }
-                    
+                    if (ansibleCheck != 0) {
+                        // Ansible not found, attempt to install it
+                        sh 'sudo apt-get update'
+                        sh 'sudo apt-get install -y ansible'
+                    }
                 }
             }
         }
+        */
         
         /*
         stage('Checkout Repository') {
