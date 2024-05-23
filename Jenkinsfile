@@ -70,7 +70,7 @@ pipeline {
                 echo "1"
                 sh 'find $JENKINS_HOME -name ansible -type d'
                 echo "2"
-                sh 'find $JENKINS_HOME -name ansiblePlaybook'
+                //sh 'find $JENKINS_HOME -name ansiblePlaybook'
                 script {
                     def files = findFiles() 
                         
