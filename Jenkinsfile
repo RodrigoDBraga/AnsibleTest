@@ -24,7 +24,7 @@ pipeline {
         }*/
         stage('Fetch IP Address') {
             steps {
-                /*
+                
                 script {
                     def ip_address = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim() // this is currently getting the docker/jenkins ip and not the machine itself
                     if (ip_address == '172.17.0.2') {
@@ -32,8 +32,6 @@ pipeline {
                     }
                     env.SERVER_IP = ip_address
                     echo "Fetched IP: ${env.SERVER_IP}"
-                }*/
-                echo "1"
             }
         }
         /*
