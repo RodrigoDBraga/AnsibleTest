@@ -90,6 +90,19 @@ pipeline {
                 echo "1"
                 sh 'find $JENKINS_HOME -name ansible -type d'               
                 echo "2"
+
+                script {
+                    // Define the command to find Ansible executable
+                    def ansibleExeCmd = "find /var/jenkins_home/plugins/ansible -name 'ansible' -type f -executable -print -quit"
+                    
+                    // Execute the command and capture the output
+                    def ansibleExeOutput = sh(script: ansibleExeCmd, returnStdout: true).trim()
+
+                    // Print the location of Ansible executable
+                    echo "Location of Ansible executable: ${ansibleExeOutput}"
+                }
+                /*
+                // this tells you what version of ansible you have and that it is actually installed in the server
                 script {
                     def installedPlugins = Jenkins.instance.pluginManager.plugins
                     for (plugin in installedPlugins) {
@@ -99,7 +112,7 @@ pipeline {
                             break
                         }
                 }
-                }
+                }*
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
                 //sh 'ansible --version'
                 echo "3"
@@ -109,7 +122,8 @@ pipeline {
                             inventory: 'playbooks/inventory.ini'//,
                             //extras: '--extra-vars "server_ip=${env.SERVER_IP}"' // can also put here the server_name depending on what we are doing
                 )*/
-                ansiblePlaybook installation: 'Ansible', inventory: '/var/jenkins_home/workspace/Private_github_test/playbooks/inventory.ini', playbook: '/var/jenkins_home/workspace/Private_github_test/playbooks/playbook.yml', vaultTmpPath: ''
+                
+                //ansiblePlaybook installation: 'Ansible', inventory: '/var/jenkins_home/workspace/Private_github_test/playbooks/inventory.ini', playbook: '/var/jenkins_home/workspace/Private_github_test/playbooks/playbook.yml', vaultTmpPath: ''
                 
                 echo "4"
                 
