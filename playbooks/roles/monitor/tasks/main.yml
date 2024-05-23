@@ -1,7 +1,10 @@
 - name: Update and deploy monitoring configuration
   template:
     src: otel-collector-config.yaml.j2
-    dest: "{{ playbook_dir }}/client/configs/otel-collector-config.yaml"
+    #dest: "{{ playbook_dir }}/client/configs/otel-collector-config.yaml"
+    dest: "/client/configs/otel-collector-config.yaml"
+
 
 - name: Restart monitoring service
-  shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
+  #shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
+  shell: docker-compose -f /client/configs/docker-compose-client-monitor.yml up -d
