@@ -71,10 +71,13 @@ pipeline {
                 sh 'find $JENKINS_HOME -name ansible -type d'               
                 echo "2"
                 script {
-                    def plugins = Jenkins.instance.pluginManager.plugins
-                    plugins.each { plugin ->
-                        echo "Plugin: ${plugin.getShortName()} (${plugin.getVersion()})"
-                    }
+                    def installedPlugins = Jenkins.instance.pluginManager.plugins
+                    for (plugin in installedPlugins) {
+                        echo "Plugin Name: ${plugin.getShortName()}, Version: ${plugin.getVersion()}"
+                        if (plugin.getShortName() == 'ansible') {
+                            echo "Found Ansible plugin. Exiting loop."
+                            break
+                        }
                 }
                 //sh 'find $JENKINS_HOME -name ansiblePlaybook'
                 //sh 'ansible --version'
