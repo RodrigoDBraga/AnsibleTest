@@ -34,6 +34,7 @@ pipeline {
                     echo "Fetched IP: ${env.SERVER_IP}"
             }
         }
+        }
         /*
         stage('Send IP to Monitoring Server') {
             steps {
