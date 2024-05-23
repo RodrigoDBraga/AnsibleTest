@@ -59,6 +59,7 @@ pipeline {
                 */
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
+                sh 'find / -name ansible -type d'
                 sh 'find / -name ansible -type f'
                 println "Ansible installation directory: ${ansible.home}"
                 sh 'ansible --version'
