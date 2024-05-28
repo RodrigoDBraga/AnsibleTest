@@ -89,7 +89,25 @@ pipeline {
                 def currentUser = sh(script: 'whoami', returnStdout: true).trim()
                 env.banana= currentUser
                 echo "What user am i: ${env.banana}"
+
+                // Check if sudo is available
+                def sudoCheck = sh(script: '''
+                        if command -v sudo &> /dev/null; then
+                            sudo -n true 2>/dev/null && echo "has_sudo" || echo "no_sudo"
+                        else
+                            echo "no_sudo_command"
+                        fi
+                    ''', returnStdout: true).trim()
+
+                    if (sudoCheck == "has_sudo") {
+                        echo "User has sudo permissions."
+                    } else if (sudoCheck == "no_sudo_command") {
+                        echo "Sudo command is not available."
+                    } else {
+                        echo "User does not have sudo permissions."
                 }
+                }
+
                 
                 echo "3"
                 //echo "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"
