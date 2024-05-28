@@ -3,24 +3,23 @@
   gather_facts: yes
 
   tasks:
+    - name: Gather user information
+      shell: |
+            whoami
+            id
+            sudo -l
+      register: user_info
 
-- name: Gather user information
-  shell: |
-        whoami
-        id
-        sudo -l
-  register: user_info
+  - name: Display user information
+      debug:
+      var: user_info.stdout_lines
 
-- name: Display user information
-  debug:
-  var: user_info.stdout_lines
-
-- name: Update packages
-  apt:
-  name: "*"
-  state: latest
-  update_cache: yes
-  become: yes
+  - name: Update packages
+      apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+      become: yes
 
 #- hosts: all
   #become: yes
