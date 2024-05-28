@@ -86,7 +86,7 @@ pipeline {
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',//,
-                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME)" -vvvv ansible_user=$USER' // can also put here the server_name depending on what we are doing
+                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=$USER" -vvvv ' // can also put here the server_name depending on what we are doing
                              
                 )//.exec("-l")
                 
