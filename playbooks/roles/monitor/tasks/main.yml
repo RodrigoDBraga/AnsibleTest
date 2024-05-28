@@ -10,6 +10,11 @@
   #shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
 #  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
 ---
+- name: Ensure python3-apt is installed
+  apt:
+    name: python3-apt
+    state: present
+
 - name: Update apt and install prerequisites
   apt:
     update_cache: yes
