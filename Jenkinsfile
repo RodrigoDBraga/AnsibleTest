@@ -35,7 +35,7 @@ pipeline {
             }
         }
         */
-        
+        /*
         stage('Install sudo') {
             steps {
                 ansiblePlaybook(
@@ -45,6 +45,7 @@ pipeline {
                 )
             }
         }
+        */
 
         stage('Fetch IP Address') {
             steps {
