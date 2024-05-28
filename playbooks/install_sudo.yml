@@ -1,7 +1,7 @@
 ---
 - name: Install sudo
   hosts: all
-  gather_facts: false
+  gather_facts: true
 
   tasks:
     - name: Install sudo (Ubuntu/Debian)
