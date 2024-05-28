@@ -35,6 +35,12 @@ pipeline {
             }
         }
         */
+        
+        stage('Install sudo') {
+            steps {
+                sh 'apt-get update && apt-get install -y sudo'
+            }
+        }
 
         stage('Fetch IP Address') {
             steps {
