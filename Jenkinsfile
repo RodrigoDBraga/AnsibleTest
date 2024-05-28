@@ -84,6 +84,13 @@ pipeline {
                 def computerUser = sh(script: 'logname', returnStdout: true).trim()
                 }
                 */
+                echo "2"
+                script{
+                def currentUser = sh(script: 'whoami', returnStdout: true).trim()
+                env.banana= currentUser
+                echo env.banana
+                }
+                
                 echo "3"
                 //echo "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"
                 
