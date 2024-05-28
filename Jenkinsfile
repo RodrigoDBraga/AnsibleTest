@@ -85,11 +85,15 @@ pipeline {
                 sh 'ansible --version'
                 sh 'which ansible-playbook'
                 */
+
+                /*
                 sh 'echo $PATH'
                 sh 'pwd && ls -ltr'
                 echo "1"
                 sh 'find $JENKINS_HOME -name ansible -type d'               
                 echo "2"
+                */
+
                 /*
                 // this tells you what version of ansible you have and that it is actually installed in the server
                 script {
