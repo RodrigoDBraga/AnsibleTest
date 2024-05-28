@@ -66,7 +66,9 @@ pipeline {
 
         stage('Run Ansible Playbook') {
             steps {
+                script {
                 env.SERVER_NAME = 'test_name'
+                }
                 echo "3"
                 
                 ansiblePlaybook(
