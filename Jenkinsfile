@@ -7,6 +7,7 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     */
+    
     stages {
         /*
         stage('Prepare Environment') {
@@ -57,7 +58,8 @@ pipeline {
                     }
                     env.SERVER_IP = ip_address
                     echo "Fetched IP: ${env.SERVER_IP}"
-                    //env.SERVER_NAME = server_name
+                    env.SERVER_NAME = server_name
+                    echo "this is server_name: ${env.SERVER_NAME}"
                     //this is where we should run through the excel file and get the names from based on the ips, if an ip isn't on the list this all should still work but the name displayed should be the ip instead of a custom name
 
             }
@@ -82,15 +84,15 @@ pipeline {
                 }
                 echo "3"
                 echo "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"
-                /*
+                
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',//,
                             extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=$USER" -vvvv ' // can also put here the server_name depending on what we are doing
                              
                 )//.exec("-l")
-                */
-                sh 'ansible-playbook -i "localhost," -c local playbooks/playbook.yml  playbooks/inventory.ini ---extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=$USER" -vvvv'
+                
+                //sh 'ansible-playbook -i "localhost," -c local playbooks/playbook.yml  playbooks/inventory.ini ---extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=$USER" -vvvv'
                 
                 //ansiblePlaybook installation: 'Ansible', inventory: '/var/jenkins_home/workspace/Private_github_test/playbooks/inventory.ini', playbook: '/var/jenkins_home/workspace/Private_github_test/playbooks/playbook.yml', vaultTmpPath: ''
                 
