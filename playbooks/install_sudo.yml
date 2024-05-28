@@ -5,7 +5,7 @@
 
   tasks:
     - name: Install sudo (Ubuntu/Debian)
-      raw: apt-get update && apt-get install -y sudo
+      raw: apt-get update && apt-get install -f sudo
       when: ansible_os_family == 'Debian'
 
     - name: Install sudo (CentOS/RHEL)
