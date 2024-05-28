@@ -70,6 +70,7 @@ pipeline {
                 env.SERVER_NAME = 'test_name'
                 }
                 echo "3"
+                echo "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME)"
                 
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
