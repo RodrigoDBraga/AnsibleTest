@@ -1,7 +1,19 @@
 ---
-- hosts: all
-  roles:
-    - monitor
+- name: List installed packages
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Collect package facts
+      ansible.builtin.package_facts:
+        name_pattern: ".*"
+
+    - name: Display installed packages
+      ansible.builtin.debug:
+        msg: "{{ packages.installed }}"
+
+#- hosts: all
+#  roles:
+#    - monitor
 
 
 #- hosts: all
