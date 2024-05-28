@@ -11,16 +11,16 @@
 #  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
 ---
 - name: Ensure sudo is installed
-  become: yes
   apt:
     name: sudo
     state: present
+  become: yes
 
 - name: Ensure python3-apt is installed
   apt:
     name: python3-apt
     state: present
-  #become: yes
+  become: yes
 
 - name: Update apt and install prerequisites
   apt:
@@ -31,6 +31,7 @@
     - git
     - docker.io
     - docker-compose
+  become: yes
 
 - name: Ensure Docker service is running
   service:
