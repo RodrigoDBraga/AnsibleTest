@@ -70,12 +70,12 @@ pipeline {
                 env.SERVER_NAME = 'test_name'
                 }
                 echo "3"
-                echo "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME)"
+                echo "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"
                 
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',//,
-                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME)"' // can also put here the server_name depending on what we are doing
+                            extras: '--extra-vars "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"' // can also put here the server_name depending on what we are doing
                 )//.exec("-l")
                 
                 //ansiblePlaybook installation: 'Ansible', inventory: '/var/jenkins_home/workspace/Private_github_test/playbooks/inventory.ini', playbook: '/var/jenkins_home/workspace/Private_github_test/playbooks/playbook.yml', vaultTmpPath: ''
