@@ -35,14 +35,14 @@ pipeline {
             }
         }
         */
-        
+        /*
         stage('Configure Sudoers') {
             steps {
                 script {
                     sh 'echo "jenkins ALL=(ALL) NOPASSWD: /usr/bin/apt-get update" | sudo tee -a /etc/sudoers'
                 }
             }
-        }
+        }*/
 
         stage('Fetch IP Address') {
             steps {
