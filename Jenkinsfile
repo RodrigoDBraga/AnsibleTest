@@ -35,14 +35,16 @@ pipeline {
             }
         }
         */
-        /*
-        stage('Configure Sudoers') {
+        
+        stage('Install sudo') {
             steps {
-                script {
-                    sh 'echo "jenkins ALL=(ALL) NOPASSWD: /usr/bin/apt-get update" | sudo tee -a /etc/sudoers'
-                }
+                ansiblePlaybook(
+                    playbook: 'playbooks/install_sudo.yml',
+                    inventory: 'playbooks/inventory.ini',
+                    colorized: true
+                )
             }
-        }*/
+        }
 
         stage('Fetch IP Address') {
             steps {

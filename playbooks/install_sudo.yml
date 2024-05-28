@@ -1,0 +1,13 @@
+---
+- name: Install sudo
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Install sudo (Ubuntu/Debian)
+      raw: apt-get update && apt-get install -y sudo
+      when: ansible_os_family == 'Debian'
+
+    - name: Install sudo (CentOS/RHEL)
+      raw: yum install -y sudo
+      when: ansible_os_family == 'RedHat'
