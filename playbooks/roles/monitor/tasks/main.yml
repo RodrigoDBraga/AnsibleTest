@@ -33,7 +33,8 @@
 
 - name: Clone monitoring repository
   git:
-    repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
+    #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
+    repo: "https://github.com/RodrigoDBraga/AnsibleTest"
     dest: /opt/monitoring
 
 - name: Create environment file for Docker Compose
