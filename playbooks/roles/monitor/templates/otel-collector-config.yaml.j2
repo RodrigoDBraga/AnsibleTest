@@ -7,10 +7,10 @@ processors:
   batch:
 exporters:
   otlp:
-    endpoint: "{{ server_ip }}"
+    endpoint: "{{ server_ip }}:4317"
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp]
+      exporters: [logging, otlp]

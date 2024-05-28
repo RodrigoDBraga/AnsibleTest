@@ -1,10 +1,47 @@
-- name: Update and deploy monitoring configuration
-  template:
-    src: otel-collector-config.yaml.j2
-    #dest: "{{ playbook_dir }}/client/configs/otel-collector-config.yaml"
-    dest: "/var/jenkins_home/workspace/Private_github_test/client/configs/otel-collector-config.yaml"
+
+#- name: Update and deploy monitoring configuration
+#  template:
+#    src: otel-collector-config.yaml.j2
+#    #dest: "{{ playbook_dir }}/client/configs/otel-collector-config.yaml"
+#    dest: "/var/jenkins_home/workspace/Private_github_test/client/configs/otel-collector-config.yaml"
 
 
-- name: Restart monitoring service
+#- name: Restart monitoring service
   #shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
-  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
+#  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
+---
+- name: Update apt and install prerequisites
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - docker.io
+    - docker-compose
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Clone monitoring repository
+  git:
+    repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
+    dest: /opt/monitoring
+
+- name: Create environment file for Docker Compose
+  copy:
+    content: |
+      SERVER_IP={{ server_ip }}
+      SERVER_NAME={{ server_name }}
+    dest: /opt/monitoring/.env
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start monitoring services with Docker Compose
+  command: docker-compose up -d
+  args:
+    chdir: /opt/monitoring
