@@ -12,8 +12,8 @@ pipeline {
         stage('Install Packages') {
             steps {
                 ansiblePlaybook(
-                    playbook: 'install_packages.yml',
-                    inventory: 'inventory_file'
+                    playbook: 'playbooks/install_packages.yml',
+                    inventory: 'playbooks/inventory_file'
                 )
             }
         }
