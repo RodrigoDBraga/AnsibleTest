@@ -9,7 +9,7 @@
 #- name: Restart monitoring service
   #shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
 #  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
----
+
 #
 #- name: Ensure sudo is installed
 #  become: yes
@@ -17,40 +17,11 @@
 #    name: sudo
 #    state: present
   
-- name: Check if sudo is installed
-  command: which sudo
-  register: sudo_check
-  ignore_errors: true
-
-- name: Check if user is a member of the sudo group
-  command: groups {{ ansible_user }}
-  register: group_check
-
-- name: Extract sudo group membership
-  set_fact:
-    user_in_sudo: "{{ 'sudo' in group_check.stdout.split() }}"
-
-- name: Temporarily add user to sudo group
-  user:
-    name: "{{ ansible_user }}"
-    groups: sudo
-    append: yes
-  when: not user_in_sudo
-
-- name: Check if sudo is installed
-  command: which sudo
-  register: sudo_check
-  ignore_errors: true
-
-- name: Install sudo if it's not installed
-  apt:
-    name: sudo
-    state: present
-  when: sudo_check.rc != 0
 
 
+---
 - name: Ensure python3-apt is installed
-  become: yes
+  #become: yes
   apt:
     name: python3-apt
     state: present
