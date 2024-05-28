@@ -36,10 +36,11 @@ pipeline {
         }
         */
         
-        stage('Install sudo') {
+        stage('Configure Sudoers') {
             steps {
-                //sh 'apt-get update && apt-get install -f sudo'
-                sh 'sudo -v'
+                script {
+                    sh 'echo "jenkins ALL=(ALL) NOPASSWD: /usr/bin/apt-get update" | sudo tee -a /etc/sudoers'
+                }
             }
         }
 
