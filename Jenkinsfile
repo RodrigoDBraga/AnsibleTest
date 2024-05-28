@@ -9,6 +9,17 @@ pipeline {
     */
     
     stages {
+        stage('Install Packages') {
+            steps {
+                ansiblePlaybook(
+                    playbook: 'install_packages.yml',
+                    inventory: 'inventory_file'
+                )
+            }
+        }
+
+
+        /*
         stage('Check User and Sudo Permissions') {
             steps {
                 script {
@@ -58,7 +69,7 @@ pipeline {
                     '''
                 }
             }
-        }
+        }*/
 
 
 

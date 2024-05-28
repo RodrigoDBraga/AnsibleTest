@@ -1,0 +1,39 @@
+---
+- hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Gather package facts
+      package_facts:
+        manager: auto
+
+    - name: Install sudo (if not installed)
+      package:
+        name: sudo
+        state: present
+      when: "'sudo' not in ansible_facts.packages"
+
+    - name: Install required packages
+      package:
+        name: "{{ required_packages }}"
+        state: present
+      become: true
+      vars:
+        required_packages:
+          - git
+          - any_other_package
+
+
+
+#- name: Install sudo
+ # hosts: all
+ # gather_facts: true
+
+  #tasks:
+  #  - name: Install sudo (Ubuntu/Debian)
+   #   raw: apt-get update && apt-get install -f sudo
+    #  when: ansible_os_family == 'Debian'
+
+   # - name: Install sudo (CentOS/RHEL)
+   #   raw: yum install -y sudo
+   #   when: ansible_os_family == 'RedHat'
