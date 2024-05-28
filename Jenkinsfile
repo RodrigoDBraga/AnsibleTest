@@ -88,7 +88,7 @@ pipeline {
                 script{
                 def currentUser = sh(script: 'whoami', returnStdout: true).trim()
                 env.banana= currentUser
-                echo env.banana
+                echo "What user am i: ${env.banana}"
                 }
                 
                 echo "3"
