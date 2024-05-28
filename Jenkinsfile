@@ -38,7 +38,8 @@ pipeline {
         
         stage('Install sudo') {
             steps {
-                sh 'apt-get update && apt-get install -f sudo'
+                //sh 'apt-get update && apt-get install -f sudo'
+                sh 'sudo -v'
             }
         }
 
