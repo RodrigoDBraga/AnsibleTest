@@ -20,30 +20,6 @@
 
 
 ---
-- name: Ensure python3-apt is installed
-  #become: yes
-  apt:
-    name: python3-apt
-    state: present
-  
-
-- name: Update apt and install prerequisites
-  #become: yes
-  apt:
-    update_cache: yes
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - git
-    - docker.io
-    - docker-compose
-  
-- name: Restore original sudo group membership
-  user:
-    name: "{{ ansible_user }}"
-    groups: "{{ original_groups.stdout }}"
-  when: not user_in_sudo
-
 - name: Ensure Docker service is running
   service:
     name: docker
