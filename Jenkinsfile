@@ -79,18 +79,20 @@ pipeline {
 
         stage('Run Ansible Playbook') {
             steps {
+                /*
                 script {
                 def computerUser = sh(script: 'logname', returnStdout: true).trim()
                 }
+                */
                 echo "3"
                 echo "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"
                 
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',//,
-                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=${computerUser}" -vvvv ' // can also put here the server_name depending on what we are doing
+                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) " -vvvv ' // can also put here the server_name depending on what we are doing
                              
-                )//.exec("-l")
+                )//.exec("-l") inside the extra-vars -->ansible_user=${computerUser}
                 
                 //sh 'ansible-playbook -i "localhost," -c local playbooks/playbook.yml  playbooks/inventory.ini ---extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=$USER" -vvvv'
                 
