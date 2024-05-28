@@ -4,18 +4,18 @@
 
   tasks:
 
-  -name: Gather user information
+- name: Gather user information
   shell: |
         whoami
         id
         sudo -l
   register: user_info
 
-  -name: Display user information
+- name: Display user information
   debug:
   var: user_info.stdout_lines
 
-  -name: Update packages
+- name: Update packages
   apt:
   name: "*"
   state: latest
