@@ -1,6 +1,6 @@
 ---
 - hosts: all
   #become: yes
-  sudo: yes
+  #sudo: yes
   roles:
     - monitor
