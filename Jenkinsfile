@@ -4,17 +4,16 @@ pipeline {
     
     
     stages {
-        /*
-        stage('Install Packages') {
+        stage('Fetch IP Address') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'playbooks/install_packages.yml',
-                    inventory: 'playbooks/inventory_file'
-                )
+                script {
+                    def host_ip = sh(script: "ip route get 1 | awk '{print \$(NF-2); exit}'", returnStdout: true).trim()
+                    env.SERVER_IP = host_ip
+                    echo "Fetched IP: ${env.SERVER_IP}"
+                }
             }
-        }*/
-
-
+        }
+        /*
         stage('Fetch IP Address') {
             steps {
                 
@@ -31,36 +30,17 @@ pipeline {
 
             }
         }
-        }
+        }*/
        
         stage('Run Ansible Playbook') {
             steps {
-                /*
-                script {
-                def computerUser = sh(script: 'logname', returnStdout: true).trim()
-                }
-                */
-                echo "2"
-                
-
-                
-                echo "3"
-                //echo "server_ip=\${env.SERVER_IP} server_name=\$(env.SERVER_NAME)"
                 
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
-                            inventory: 'playbooks/inventory.ini',//,
-                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) " -vvvv ' // can also put here the server_name depending on what we are doing
+                            inventory: 'playbooks/inventory.ini',
+                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) " -vvvv ' 
                              
-                )//.exec("-l") inside the extra-vars -->ansible_user=${computerUser}
-                
-                //sh 'ansible-playbook -i "localhost," -c local playbooks/playbook.yml  playbooks/inventory.ini ---extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) ansible_user=$USER" -vvvv'
-                
-                //ansiblePlaybook installation: 'Ansible', inventory: '/var/jenkins_home/workspace/Private_github_test/playbooks/inventory.ini', playbook: '/var/jenkins_home/workspace/Private_github_test/playbooks/playbook.yml', vaultTmpPath: ''
-                
-                echo "4"
-                
-                echo "Fetched IP: ${env.SERVER_IP}"
+                )
             }
         }
         stage('Copy to DigitalOcean Machine') {
