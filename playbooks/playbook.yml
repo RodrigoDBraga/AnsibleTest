@@ -3,9 +3,7 @@
   become: yes
   roles:
     - monitor
-      vars:
-        server_ip: "{{ lookup('env', 'SERVER_IP') }}"
-        server_name: "{{ lookup('env', 'SERVER_NAME') }}"
+
 
 #- hosts: all
 #  roles:
