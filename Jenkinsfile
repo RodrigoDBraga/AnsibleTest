@@ -49,7 +49,7 @@ pipeline {
                     ansiblePlaybook(
                                 playbook: 'playbooks/playbook.yml',
                                 inventory: 'playbooks/inventory.ini',
-                                extras: '--extra-vars -vvvv ' 
+                                extras: '-vvvv ' 
                                 //extras: '--extra-vars \"server_ip=${env.SERVER_IP} server_name=${env.SERVER_NAME}\" -vvvv ' 
                                 
                     )
