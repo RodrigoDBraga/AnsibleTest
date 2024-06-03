@@ -47,7 +47,23 @@
     group: root
     mode: '0644'
 
+#- name: Start monitoring services with Docker Compose
+#  command: docker-compose up -d
+#  args:
+#    chdir: /opt/monitoring
+
+
+
+- name: Display Docker Compose configuration
+  command: cat /opt/monitoring/docker-compose.yml
+
 - name: Start monitoring services with Docker Compose
-  command: docker-compose up -d
+  command: docker-compose up --verbose
   args:
     chdir: /opt/monitoring
+  register: docker_compose_output
+  ignore_errors: yes
+
+- name: Print Docker Compose output
+  debug:
+    var: docker_compose_output
