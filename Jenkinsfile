@@ -59,8 +59,8 @@ pipeline {
                                 //extras: '--extra-vars \"server_ip=${env.SERVER_IP} server_name=${env.SERVER_NAME}\" -vvvv ' 
                                 
                     )
-                    */
-                }
+                    }*/
+                
             }
         }
         stage('Copy to DigitalOcean Machine') {
