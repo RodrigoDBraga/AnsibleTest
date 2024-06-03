@@ -3,10 +3,6 @@
   become: yes
   roles:
     - monitor
-#- hosts: all
-#  roles:
-#    - monitor
-
 
 #- hosts: all
 #  gather_facts: yes
