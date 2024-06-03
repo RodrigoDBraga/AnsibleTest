@@ -1,12 +1,7 @@
 pipeline {
     agent any
 
-    /*
-    parameters {
-        string(name: 'SERVER_NAME', defaultValue: 'Server_Portugal', description: 'Friendly name of the server')
-        string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
-    }
-    */
+    
     
     stages {
         stage('Install Packages') {
@@ -18,99 +13,6 @@ pipeline {
             }
         }
 
-
-        /*
-        stage('Check User and Sudo Permissions') {
-            steps {
-                script {
-                    // Check the current user
-                    def currentUser = sh(script: 'whoami', returnStdout: true).trim()
-                    echo "What user am I: ${currentUser}"
-
-                    // Check if sudo is available
-                    def sudoCheck = sh(script: '''
-                        if command -v sudo &> /dev/null; then
-                            sudo -n true 2>/dev/null && echo "has_sudo" || echo "no_sudo"
-                        else
-                            echo "no_sudo_command"
-                        fi
-                    ''', returnStdout: true).trim()
-
-                    if (sudoCheck == "has_sudo") {
-                        echo "User has sudo permissions."
-                    } else if (sudoCheck == "no_sudo_command") {
-                        echo "Sudo command is not available."
-                    } else {
-                        echo "User does not have sudo permissions."
-                    }
-                }
-            }
-        }
-
-        stage('Attempt to Install Packages') {
-            when {
-                expression {
-                    def sudoCheck = sh(script: '''
-                        if command -v sudo &> /dev/null; then
-                            sudo -n true 2>/dev/null && echo "has_sudo" || echo "no_sudo"
-                        else
-                            echo "no_sudo_command"
-                        fi
-                    ''', returnStdout: true).trim()
-                    return sudoCheck == "has_sudo"
-                }
-            }
-            steps {
-                script {
-                    // Install necessary packages
-                    sh '''
-                        sudo apt-get update
-                        sudo apt-get install -y git docker.io docker-compose
-                    '''
-                }
-            }
-        }*/
-
-
-
-        /*
-        stage('Prepare Environment') {
-            steps {
-                script {
-                    // Check if ansible is installed
-                    def ansibleCheck = sh(script: 'which ansible-playbook', returnStatus: true)
-                    steps {
-                    sh 'apt-get update'
-                    sh 'apt-get install -y ansible'
-                    }
-                    if (ansibleCheck != 0) {
-                        // Ansible not found, attempt to install it
-                        sh 'sudo apt-get update'
-                        sh 'sudo apt-get install -y ansible'
-                    }
-                }
-            }
-        }
-        */
-        
-        /*
-        stage('Checkout Repository') {
-            steps {
-                git 'https://github.com/RodrigoDBraga/AnsibleTest'
-            }
-        }
-        */
-        /*
-        stage('Install sudo') {
-            steps {
-                ansiblePlaybook(
-                    playbook: 'playbooks/install_sudo.yml',
-                    inventory: 'playbooks/inventory.ini',
-                    colorized: true
-                )
-            }
-        }
-        */
 
         stage('Fetch IP Address') {
             steps {
@@ -129,18 +31,7 @@ pipeline {
             }
         }
         }
-        /*
-        stage('Send IP to Monitoring Server') {
-            steps {
-                script {
-                    // Replace with the actual URL of your monitoring server
-                    def monitoring_server_url = "http://your-monitoring-server.com/api/receive_ip" //still need to change this ip
-                    sh "curl -X POST ${monitoring_server_url} -d 'ip=${env.SERVER_IP}'"
-                }
-            }
-        }
-        */
-
+       
         stage('Run Ansible Playbook') {
             steps {
                 /*
