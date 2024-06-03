@@ -7,7 +7,7 @@ pipeline {
         string(name: 'SERVER_IP', defaultValue: '192.168.1.19', description: 'IP address of the server')
     }
     */
-    
+    /*
     stages {
         stage('Install Packages') {
             steps {
@@ -17,6 +17,7 @@ pipeline {
                 )
             }
         }
+        */
 
 
         /*
@@ -73,7 +74,7 @@ pipeline {
 
 
 
-        /*
+        
         stage('Prepare Environment') {
             steps {
                 script {
@@ -91,7 +92,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         
         /*
         stage('Checkout Repository') {
