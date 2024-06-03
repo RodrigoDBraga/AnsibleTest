@@ -1,12 +1,12 @@
 pipeline {
     agent any
 
-    /*
+    
     environment {
-        SERVER_IP = ''
+        //SERVER_IP = ''
         SERVER_NAME = 'friendly_server_name' // Adjust as necessary
     }
-    */
+    
 
     stages {
         stage('Fetch IP Address') {
@@ -43,7 +43,7 @@ pipeline {
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',
-                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=$(env.SERVER_NAME) " -vvvv ' 
+                            extras: '--extra-vars "server_ip=${env.SERVER_IP} server_name=${env.SERVER_NAME} " -vvvv ' 
                              
                 )
             }
