@@ -3,8 +3,6 @@
   become: yes
   roles:
     - monitor
-
-
 #- hosts: all
 #  roles:
 #    - monitor
