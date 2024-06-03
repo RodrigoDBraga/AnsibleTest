@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     
-    
+    /*
     stages {
         stage('Install Packages') {
             steps {
@@ -12,7 +12,7 @@ pipeline {
                 )
             }
         }
-
+    */
 
         stage('Fetch IP Address') {
             steps {
