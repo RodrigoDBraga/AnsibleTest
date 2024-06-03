@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost #all
   become: yes
   roles:
     - monitor
