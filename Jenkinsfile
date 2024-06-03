@@ -9,6 +9,7 @@ pipeline {
     
 
     stages {
+        /*
         stage('Fetch IP Address') {
             steps {
                 script {
@@ -18,15 +19,18 @@ pipeline {
                 }
             }
         }
-        /*
+        */
+        
         stage('Fetch IP Address') {
             steps {
                 
                 script {
                     def ip_address = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim() // this is currently getting the docker/jenkins ip and not the machine itself
+                    /*
                     if (ip_address == '172.17.0.2') {
                         ip_address = '192.168.1.19'
                     }
+                    */
                     env.SERVER_IP = ip_address
                     echo "Fetched IP: ${env.SERVER_IP}"
                     //env.SERVER_NAME = server_name
@@ -35,11 +39,12 @@ pipeline {
 
             }
         }
-        }*/
+        }
        
         stage('Run Ansible Playbook') {
             steps {
-                
+                echo "Fetched IP: ${env.SERVER_IP}"
+                echo "Host name: ${env.SERVER_NAME}"
                 ansiblePlaybook(
                             playbook: 'playbooks/playbook.yml',
                             inventory: 'playbooks/inventory.ini',
