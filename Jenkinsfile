@@ -1,11 +1,12 @@
 pipeline {
     agent any
 
-    
+    /*
     environment {
         SERVER_IP = ''
         SERVER_NAME = 'friendly_server_name' // Adjust as necessary
     }
+    */
 
     stages {
         stage('Fetch IP Address') {
