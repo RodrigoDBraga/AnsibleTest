@@ -24,8 +24,8 @@
   debug:
     msg: "Server IP: {{ server_ip }}, Server Name: {{ server_name }}"
   vars:
-    server_ip: "{{ server_ip2 }}"
-    server_name: "{{ server_name2 }}"
+    server_ip: "{{ server_ip }}"
+    server_name: "{{ server_name }}"
 
 - name: Ensure Docker service is running
   service:

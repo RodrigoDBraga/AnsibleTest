@@ -54,8 +54,8 @@ pipeline {
                 */
                 sh """
                 ansible-playbook playbooks/playbook.yml playbooks/inventory.ini
-                  --extra-vars "server_ip2=${SERVER_IP}" 
-                  --extra-vars "server_name2=${SERVER_NAME}" 
+                  --extra-vars "server_ip=${SERVER_IP}" 
+                  --extra-vars "server_name=${SERVER_NAME}" 
                   -vvvv
                 """ 
 
