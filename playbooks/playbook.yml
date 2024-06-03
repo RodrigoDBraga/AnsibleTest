@@ -1,19 +1,8 @@
 ---
-- name: List installed packages
-  hosts: all
-  connection: local
-  gather_facts: false
-
-  tasks:
-    - name: Collect package facts
-      ansible.builtin.package_facts:
-        manager: "auto"
-        strategy: "first"
-      register: package_facts_result
-
-    - name: Display package facts
-      ansible.builtin.debug:
-        var: package_facts_result.ansible_facts.packages
+- hosts: all
+  become: yes
+  roles:
+    - monitor
 
 #- hosts: all
 #  roles:
