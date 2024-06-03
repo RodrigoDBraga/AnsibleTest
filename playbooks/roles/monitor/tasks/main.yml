@@ -22,7 +22,7 @@
 ---
 - name: Print server IP and name
   debug:
-    msg: "Server IP: {{ server_ip2 }}, Server Name: {{ server_name2 }}"
+    msg: "Server IP: {{ server_ip }}, Server Name: {{ server_name }}"
 
   
   #vars:
