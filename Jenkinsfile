@@ -45,7 +45,7 @@ pipeline {
             steps {
                 echo "Fetched IP: ${env.SERVER_IP}"
                 echo "Host name: ${env.SERVER_NAME}"
-                withEnv(["SERVER_IP=${env.SERVER_IP}", "SERVER_NAME=${env.SERVER_NAME}"]) {
+                withEnv(["server_ip=${env.SERVER_IP}", "server_name=${env.SERVER_NAME}"]) {
                     ansiblePlaybook(
                                 playbook: 'playbooks/playbook.yml',
                                 inventory: 'playbooks/inventory.ini',
