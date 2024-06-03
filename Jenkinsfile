@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     
-    /*
+    
     stages {
+        /*
         stage('Install Packages') {
             steps {
                 ansiblePlaybook(
@@ -11,8 +12,8 @@ pipeline {
                     inventory: 'playbooks/inventory_file'
                 )
             }
-        }
-    */
+        }*/
+
 
         stage('Fetch IP Address') {
             steps {
