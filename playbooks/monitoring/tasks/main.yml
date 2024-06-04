@@ -1,32 +1,9 @@
-
-#- name: Update and deploy monitoring configuration
-#  template:
-#    src: otel-collector-config.yaml.j2
-#    #dest: "{{ playbook_dir }}/client/configs/otel-collector-config.yaml"
-#    dest: "/var/jenkins_home/workspace/Private_github_test/client/configs/otel-collector-config.yaml"
-
-
-#- name: Restart monitoring service
-  #shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
-#  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
-
-#
-#- name: Ensure sudo is installed
-#  become: yes
-#  apt:
-#    name: sudo
-#    state: present
-  
-
-
 ---
 - name: Ensure Docker service is running
   service:
     name: docker
     state: started
     enabled: yes
-
-
 
 - name: Clone monitoring repository
   git:
