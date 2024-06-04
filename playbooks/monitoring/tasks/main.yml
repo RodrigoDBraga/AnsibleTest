@@ -11,7 +11,7 @@
     repo: "https://github.com/RodrigoDBraga/AnsibleTest"
     dest: /opt/monitoring
 
--name: Start monitoring services
+- name: Start monitoring services
   shell: docker-compose -f/opt/monitoring/docker-compose-client-monitor.yml up -d
   become: yes
 
