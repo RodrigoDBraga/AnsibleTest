@@ -54,16 +54,16 @@
 
 
 
-- name: Display Docker Compose configuration
-  command: cat /opt/monitoring/docker-compose.yml
+#- name: Display Docker Compose configuration
+#  command: cat /opt/monitoring/docker-compose.yml
 
 - name: Start monitoring services with Docker Compose
   command: docker-compose up --verbose
   args:
     chdir: /opt/monitoring
-  register: docker_compose_output
+  #register: docker_compose_output
   ignore_errors: yes
 
-- name: Print Docker Compose output
-  debug:
-    var: docker_compose_output
+#- name: Print Docker Compose output
+#  debug:
+#    var: docker_compose_output
