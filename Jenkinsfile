@@ -1,24 +1,44 @@
 pipeline {
     agent any
 
-    
+    /*
     environment {
         //SERVER_IP = ''
         SERVER_NAME = 'friendly_server_name' // Adjust as necessary
-    }
+    }*/
     
 
-    stages {        
+    stages {   
+        stage('Checkout') {
+            steps {
+                git "https://github.com/RodrigoDBraga/AnsibleTest"
+            }
+        }
+        stage('Install Ansible') {
+            steps {
+                sh '''
+                    sudo apt update
+                    sudo apt install -y ansible
+                '''
+            }
+        }
+        stage('Run Ansible Playbook') {
+            steps {
+                dir('ansible') {
+                    sh '''
+                        ansible-playbook -i inventory/hosts playbooks/setup_monitoring.yml
+                    '''
+                }
+            }
+        }
+    }
+        /*     
         stage('Fetch IP Address') {
             steps {
                 
                 script {
                     def ip_address = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim() // this is currently getting the docker/jenkins ip and not the machine itself
-                    /*
-                    if (ip_address == '172.17.0.2') {
-                        ip_address = '192.168.1.19'
-                    }
-                    */
+                    
                     env.SERVER_IP = ip_address
                     echo "Fetched IP: ${env.SERVER_IP}"
                     //env.SERVER_NAME = server_name
@@ -27,8 +47,8 @@ pipeline {
 
             }
         }
-        }
-       
+        }*/
+       /*
         stage('Run Ansible Playbook') {
             steps {
                 echo "Fetched IP: ${env.SERVER_IP}"
@@ -40,7 +60,7 @@ pipeline {
                     -vvvv 
                 """ 
             }
-        }
+        }*/
 
 
         /*

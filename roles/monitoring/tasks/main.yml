@@ -1,0 +1,70 @@
+
+#- name: Update and deploy monitoring configuration
+#  template:
+#    src: otel-collector-config.yaml.j2
+#    #dest: "{{ playbook_dir }}/client/configs/otel-collector-config.yaml"
+#    dest: "/var/jenkins_home/workspace/Private_github_test/client/configs/otel-collector-config.yaml"
+
+
+#- name: Restart monitoring service
+  #shell: docker-compose -f {{ playbook_dir }}/client/configs/docker-compose-client-monitor.yml up -d
+#  shell: docker-compose -f /var/jenkins_home/workspace/Private_github_test/client/configs/docker-compose-client-monitor.yml up -d
+
+#
+#- name: Ensure sudo is installed
+#  become: yes
+#  apt:
+#    name: sudo
+#    state: present
+  
+
+
+---
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+
+
+- name: Clone monitoring repository
+  git:
+    #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
+    repo: "https://github.com/RodrigoDBraga/AnsibleTest"
+    dest: /opt/monitoring
+
+-name: Start monitoring services
+  shell: docker-compose -f/opt/monitoring/docker-compose-client-monitor.yml up -d
+  become: yes
+
+#- name: Create environment file for Docker Compose
+#  copy:
+#    content: |
+ #     SERVER_IP={{ server_ip }}
+#      SERVER_NAME={{ server_name }}
+  #  dest: /opt/monitoring/.env
+   # owner: root
+   # group: root
+   # mode: '0644'
+
+#- name: Start monitoring services with Docker Compose
+#  command: docker-compose up -d
+#  args:
+#    chdir: /opt/monitoring
+
+
+
+#- name: Display Docker Compose configuration
+#  command: cat /opt/monitoring/docker-compose.yml
+
+#- name: Start monitoring services with Docker Compose
+  #command: docker-compose up #--verbose
+ # args:
+#    chdir: /opt/monitoring
+  #register: docker_compose_output
+#  ignore_errors: yes
+
+#- name: Print Docker Compose output
+#  debug:
+#    var: docker_compose_output
