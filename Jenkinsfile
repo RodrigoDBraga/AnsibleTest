@@ -22,6 +22,15 @@ pipeline {
                 '''
             }
         }
+        
+        stage('Add Jenkins User to Docker Group') {
+            steps {
+                sh '''
+                sudo usermod -aG docker $USER
+                newgrp docker
+                '''
+            }
+        }
 
         stage('Get Docker Container IPs') {
             steps {
