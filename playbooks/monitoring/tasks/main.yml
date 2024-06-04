@@ -15,6 +15,10 @@
   shell: docker-compose -f/opt/monitoring/docker-compose-client-monitor.yml up -d
   become: yes
 
+- name: Print Monitoring Service Start Success
+  debug:
+    msg: "Monitoring services started successfully."
+
 #- name: Create environment file for Docker Compose
 #  copy:
 #    content: |
