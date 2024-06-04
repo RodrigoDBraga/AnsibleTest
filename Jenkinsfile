@@ -22,13 +22,16 @@ pipeline {
                 '''
             }
         }
-        
-        stage('Add Jenkins User to Docker Group') {
+
+        stage('Ensure Docker Permissions') {
             steps {
-                sh '''
-                sudo usermod -aG docker $USER
-                newgrp docker
-                '''
+                script {
+                    try {
+                        sh 'docker ps -q'
+                    } catch (Exception e) {
+                        error('Jenkins user does not have permission to interact with Docker. Ensure the Jenkins user is in the Docker group and restart the Jenkins service.')
+                    }
+                }
             }
         }
 
@@ -36,7 +39,7 @@ pipeline {
             steps {
                 script {
                     def containerIps = sh(script: '''
-                        docker ps -q | xargs -n 1 -I {} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}
+                        docker ps -q | xargs -I {} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}
                     ''', returnStdout: true).trim().split('\n')
                     def inventoryContent = '[Monitoring]\n'
                     for (ip in containerIps) {
