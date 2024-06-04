@@ -26,7 +26,7 @@ pipeline {
             steps {
                 dir('ansible') {
                     sh '''
-                        ansible-playbook -i inventory/hosts playbooks/setup_monitoring.yml
+                        ansible-playbook -i playbooks/inventory.ini playbooks/playbook.yml
                     '''
                 }
             }
