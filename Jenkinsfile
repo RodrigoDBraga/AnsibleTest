@@ -30,7 +30,7 @@ pipeline {
                     '''
                     */
                     sh '''
-                        ansible-playbook playbooks/playbook.yml 
+                        ansible-playbook playbooks/playbook.yml playbooks/inventory.ini
                     '''
                 
             }
