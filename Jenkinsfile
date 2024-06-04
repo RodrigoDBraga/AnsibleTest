@@ -22,6 +22,23 @@ pipeline {
                 '''
             }
         }
+
+        stage('Get Docker Container IPs') {
+            steps {
+                script {
+                    def containerIps = sh(script: '''
+                        docker ps -q | xargs -n 1 -I {} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}
+                    ''', returnStdout: true).trim().split('\n')
+                    def inventoryContent = '[Monitoring]\n'
+                    for (ip in containerIps) {
+                        inventoryContent += "${ip} ansible_user=root\n"
+                    }
+                    writeFile file: 'playbooks/inventory.ini', text: inventoryContent
+                }
+            }
+        }
+
+
         stage('Run Ansible Playbook') {
             steps {
                     /*
