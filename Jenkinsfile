@@ -24,11 +24,11 @@ pipeline {
         }
         stage('Run Ansible Playbook') {
             steps {
-                dir('ansible') {
+                
                     sh '''
                         ansible-playbook -i playbooks/playbook.yml playbooks/inventory.ini 
                     '''
-                } 
+                
             }
         }
     }
