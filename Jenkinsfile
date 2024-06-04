@@ -11,7 +11,7 @@ pipeline {
     stages {   
         stage('Checkout') {
             steps {
-                git "https://github.com/RodrigoDBraga/AnsibleTest"
+                git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
         stage('Install Ansible') {
