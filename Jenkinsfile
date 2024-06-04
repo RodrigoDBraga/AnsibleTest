@@ -22,6 +22,15 @@ pipeline {
                 '''
             }
         }
+        
+        stage('Add Jenkins User to Docker Group') {
+            steps {
+                sh '''
+                sudo usermod -aG docker $USER
+                newgrp docker
+                '''
+            }
+        }
 
         stage('Ensure Docker Permissions') {
             steps {
@@ -45,7 +54,7 @@ pipeline {
                     for (ip in containerIps) {
                         inventoryContent += "${ip} ansible_user=root\n"
                     }
-                    writeFile file: 'playbooks/inventory.ini', text: inventoryContent
+                    writeFile file: 'ansible/inventory.ini', text: inventoryContent
                 }
             }
         }
