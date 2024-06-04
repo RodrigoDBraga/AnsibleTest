@@ -8,19 +8,7 @@ pipeline {
     }
     
 
-    stages {
-        /*
-        stage('Fetch IP Address') {
-            steps {
-                script {
-                    def host_ip = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim()
-                    env.SERVER_IP = host_ip
-                    echo "Fetched IP: ${env.SERVER_IP}"
-                }
-            }
-        }
-        */
-        
+    stages {        
         stage('Fetch IP Address') {
             steps {
                 
@@ -45,34 +33,12 @@ pipeline {
             steps {
                 echo "Fetched IP: ${env.SERVER_IP}"
                 echo "Host name: ${env.SERVER_NAME}"
-                /*
-                ansiblePlaybook(
-                                playbook: 'playbooks/playbook.yml',
-                                inventory: 'playbooks/inventory.ini',
-                                extras: '--extra-vars \"server_ip=${env.SERVER_IP} server_name=${env.SERVER_NAME}\" -vvvv ' 
-                )
-                */
                 sh """
                 ansible-playbook playbooks/playbook.yml playbooks/inventory.ini \
                     --extra-vars "server_ip='${SERVER_IP}'" \
                     --extra-vars "server_name='${SERVER_NAME}'" \
                     -vvvv 
                 """ 
-                
-
-
-
-                /*
-                withEnv(["server_ip2=${env.SERVER_IP}", "server_name2=${env.SERVER_NAME}"]) {
-                    ansiblePlaybook(
-                                playbook: 'playbooks/playbook.yml',
-                                inventory: 'playbooks/inventory.ini',
-                                extras: '-vvvv ' 
-                                //extras: '--extra-vars \"server_ip=${env.SERVER_IP} server_name=${env.SERVER_NAME}\" -vvvv ' 
-                                
-                    )
-                    }*/
-                
             }
         }
         stage('Copy to DigitalOcean Machine') {
