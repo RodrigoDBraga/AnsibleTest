@@ -20,32 +20,108 @@
 
 
 ---
-- name: Print server IP and name
-  debug:
-    msg: "Server IP: {{ server_ip }}, Server Name: {{ server_name }}"
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - wget
+    state: present
 
+- name: Download and install OpenTelemetry Collector
+  get_url:
+    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.27.0/otelcol_0.27.0_linux_amd64.tar.gz"
+    dest: "/tmp/otelcol.tar.gz"
 
-- name: Ensure Docker service is running
-  service:
-    name: docker
-    state: started
-    enabled: yes
+- name: Extract OpenTelemetry Collector
+  unarchive:
+    src: "/tmp/otelcol.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: yes
 
-- name: Clone monitoring repository
-  git:
-    #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
-    repo: "https://github.com/RodrigoDBraga/AnsibleTest"
-    dest: /opt/monitoring
-
-- name: Create environment file for Docker Compose
+- name: Ensure otel-collector service file is present
   copy:
-    content: |
-      SERVER_IP={{ server_ip }}
-      SERVER_NAME={{ server_name }}
-    dest: /opt/monitoring/.env
-    owner: root
-    group: root
+    src: otel-collector.service
+    dest: /etc/systemd/system/otel-collector.service
     mode: '0644'
+
+- name: Create OpenTelemetry Collector config directory
+  file:
+    path: /etc/otel-collector
+    state: directory
+
+- name: Deploy OpenTelemetry Collector config
+  template:
+    src: otel-collector-config.yaml.j2
+    dest: /etc/otel-collector/config.yaml
+    mode: '0644'
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and start otel-collector service
+  systemd:
+    name: otel-collector
+    enabled: yes
+    state: started
+
+- name: Install Prometheus Node Exporter
+  apt:
+    name: prometheus-node-exporter
+    state: present
+
+- name: Ensure Prometheus Node Exporter is running
+  systemd:
+    name: prometheus-node-exporter
+    enabled: yes
+    state: started
+
+- name: Install Docker (required for cAdvisor)
+  apt:
+    name: docker.io
+    state: present
+
+- name: Run cAdvisor container
+  docker_container:
+    name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    state: started
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
+    privileged: true
+
+#- name: Print server IP and name
+#  debug:
+#    msg: "Server IP: {{ server_ip }}, Server Name: {{ server_name }}"
+
+
+#- name: Ensure Docker service is running
+#  service:
+#    name: docker
+#    state: started
+#    enabled: yes
+
+#- name: Clone monitoring repository
+#  git:
+#    #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
+#    repo: "https://github.com/RodrigoDBraga/AnsibleTest"
+#    dest: /opt/monitoring
+
+#- name: Create environment file for Docker Compose
+#  copy:
+#    content: |
+ #     SERVER_IP={{ server_ip }}
+#      SERVER_NAME={{ server_name }}
+  #  dest: /opt/monitoring/.env
+   # owner: root
+   # group: root
+   # mode: '0644'
 
 #- name: Start monitoring services with Docker Compose
 #  command: docker-compose up -d
@@ -57,12 +133,12 @@
 #- name: Display Docker Compose configuration
 #  command: cat /opt/monitoring/docker-compose.yml
 
-- name: Start monitoring services with Docker Compose
-  command: docker-compose up #--verbose
-  args:
-    chdir: /opt/monitoring
+#- name: Start monitoring services with Docker Compose
+  #command: docker-compose up #--verbose
+ # args:
+#    chdir: /opt/monitoring
   #register: docker_compose_output
-  ignore_errors: yes
+#  ignore_errors: yes
 
 #- name: Print Docker Compose output
 #  debug:
