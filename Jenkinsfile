@@ -41,6 +41,9 @@ pipeline {
                 """ 
             }
         }
+
+
+        /*
         stage('Copy to DigitalOcean Machine') {
             steps {
                 sshagent(['DigitalOceanSSHKey']) {
@@ -54,6 +57,6 @@ pipeline {
                     sh 'ssh root@209.97.183.9 "cd /home/iprolepsis/monitoring && docker-compose up -d"'
                 }
             }
-        }
+        }*/
     }
 }

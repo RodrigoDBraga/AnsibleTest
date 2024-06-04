@@ -3,14 +3,36 @@ receivers:
     protocols:
       grpc:
       http:
+
+  prometheus:
+    config:
+      scrape_configs:
+      - job_name: 'main-otel-collector-scraper'
+        scrape_interval: 10s
+        static_configs:
+        - targets: ['0.0.0.0:8888', 'SERVER_IP:8080', 'SERVER_IP:9100']
+
 processors:
   batch:
+    timeout: "1s"
+
+extensions:
+  health_check:
+
 exporters:
   otlp:
-    endpoint: 209.97.183.9:4317 
+    endpoint: http://5.75.190.25:4317
+    tls:
+      insecure: true
+
 service:
-  pipelines:
+  pipelines:                                      
     traces:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [logging, otlp]
+      exporters: [otlp]
+
+    metrics:
+      receivers: [prometheus]
+      exporters: [otlp]
+
+  extensions: [health_check]
