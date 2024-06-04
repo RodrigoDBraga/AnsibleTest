@@ -6,7 +6,14 @@ pipeline {
         //SERVER_IP = ''
         SERVER_NAME = 'friendly_server_name' // Adjust as necessary
     }*/
-    
+    environment {
+        // Set this to 'true' for testing (create a container)
+        // Set this to 'false' in client environments (discover existing containers)
+        CREATE_TEST_CONTAINER = 'true' 
+
+        // Optional: Filter for client containers (adjust based on naming conventions)
+        CLIENT_CONTAINER_FILTER = 'name=client-' 
+    }
 
     stages {   
         stage('Checkout') {
@@ -14,6 +21,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
+        /* YOU DO NEED THIS ACTUALLY SO DON'T DELETE IT
         stage('Install Ansible') {
             steps {
                 sh '''
@@ -21,29 +29,53 @@ pipeline {
                     sudo apt install -y ansible
                 '''
             }
-        }
+        }*/
         
-        stage('Add Jenkins User to Docker Group') {
-            steps {
-                sh '''
-                sudo usermod -aG docker $USER
-                newgrp docker
-                '''
-            }
-        }
-
-        stage('Ensure Docker Permissions') {
+        
+        stage('Container Setup') {
             steps {
                 script {
-                    try {
-                        sh 'docker ps -q'
-                    } catch (Exception e) {
-                        error('Jenkins user does not have permission to interact with Docker. Ensure the Jenkins user is in the Docker group and restart the Jenkins service.')
+                    if (env.CREATE_TEST_CONTAINER == 'true') {
+                        // Create a test Ubuntu container
+                        sh """
+                            docker run -d -it --name ubuntu-test-container \
+                                -v /var/run/docker.sock:/var/run/docker.sock \
+                                ubuntu:latest /bin/bash
+                        """
+                        // Get the IP of the newly created container
+                        env.TARGET_CONTAINER_IP = sh(returnStdout: true, script: "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ubuntu-test-container").trim()
+                    } else {
+                        // Discover existing client container IPs
+                        def clientContainerIPs = sh(returnStdout: true, script: """
+                            docker ps -aq --filter "${env.CLIENT_CONTAINER_FILTER}" | xargs -I {} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}
+                        """).trim().split("\n").findAll { it.trim() != "" }
+
+                        if (clientContainerIPs.isEmpty()) {
+                            error("No client containers found with filter: ${env.CLIENT_CONTAINER_FILTER}")
+                        } else {
+                            env.TARGET_CONTAINER_IP = clientContainerIPs[0] // Use the first IP found
+                            echo "Discovered client container IPs: ${clientContainerIPs.join(', ')}"
+                        }
                     }
                 }
             }
         }
+        
+        stage('Update Ansible Inventory') {
+            steps {
+                script {
+                    def containerIps = env.TARGET_CONTAINER_IPS.split('\n').collect { it.trim() }.findAll { it != "" }
+                    def inventoryContent = "[Monitoring]\n"
+                    for (ip in containerIps) {
+                        inventoryContent += "${ip} ansible_user=${env.ANSIBLE_USER}\n"
+                    }
+                    writeFile file: 'ansible/inventory.ini', text: inventoryContent
+                    sh "cat ansible/inventory.ini" // Optional: Print the inventory file
+                }
+            }
+        }
 
+        /*
         stage('Get Docker Container IPs') {
             steps {
                 script {
@@ -57,7 +89,7 @@ pipeline {
                     writeFile file: 'ansible/inventory.ini', text: inventoryContent
                 }
             }
-        }
+        }*/
 
 
         stage('Run Ansible Playbook') {
