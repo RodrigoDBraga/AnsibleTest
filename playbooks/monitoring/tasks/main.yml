@@ -12,7 +12,7 @@
     dest: /opt/monitoring
 
 - name: Start monitoring services
-  shell: docker-compose -f/opt/monitoring/docker-compose-client-monitor.yml up -d
+  shell: docker-compose -f/opt/monitoring/files/docker-compose-client-monitor.yml up -d
   become: yes
 
 - name: Print Monitoring Service Start Success
