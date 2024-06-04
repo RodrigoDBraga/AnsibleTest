@@ -58,7 +58,7 @@
 #  command: cat /opt/monitoring/docker-compose.yml
 
 - name: Start monitoring services with Docker Compose
-  command: docker-compose up --verbose
+  command: docker-compose up #--verbose
   args:
     chdir: /opt/monitoring
   #register: docker_compose_output
