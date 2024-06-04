@@ -26,7 +26,7 @@ pipeline {
             steps {
                 dir('ansible') {
                     sh '''
-                        ansible-playbook AnsibleTest/playbooks/playbook.yml AnsibleTest/playbooks/inventory.ini 
+                        ansible-playbook -i playbook.yml inventory.ini 
                     '''
                 } 
             }
