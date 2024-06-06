@@ -87,7 +87,7 @@ pipeline {
                     INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
 
                     // Initialize inventory file
-                    sh "echo '[all]' > ${INVENTORY_FILE}"
+                    sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
                     
                     // Get all nodes
                     def nodes = jenkins.model.Jenkins.instance.nodes
@@ -194,7 +194,7 @@ pipeline {
                     workspacePath = env.WORKSPACE
         
                     INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-                    
+
                     def inventory = readFile("${INVENTORY_FILE}")
                     echo "Inventory File:\n${inventory}"
                     
