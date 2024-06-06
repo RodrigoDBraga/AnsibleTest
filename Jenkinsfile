@@ -51,13 +51,14 @@ pipeline {
                                 sh "scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/"
                                 sh "ssh -o StrictHostKeyChecking=no jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
                             }*/
+                            sshagent(['vm1']) {
                             sh """
                                 ssh-agent sh -c '
                                 ssh-add ${SSH_KEY};
                                 scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
                                 ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
                                 '
-                            """
+                            """}
                         }
                         }
                     }
