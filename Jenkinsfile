@@ -1,7 +1,7 @@
-import hudson.model.Computer
-import hudson.remoting.Callable
-import hudson.remoting.Future
-import org.jenkinsci.remoting.RoleChecker
+//import hudson.model.Computer
+//import hudson.remoting.Callable
+//import hudson.remoting.Future
+//import org.jenkinsci.remoting.RoleChecker
 
 pipeline {
     agent any
@@ -29,7 +29,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
-
+        /*
         stage('Get Node Information') {
             steps {
                 script {
@@ -78,7 +78,39 @@ pipeline {
                 }
             }
         }
+        */
+        stage('Discover Running Nodes') {
+            steps {
+                script {
+                    // Initialize inventory file
+                    sh "echo '[all]' > ${INVENTORY_FILE}"
+                    
+                    // Get all nodes
+                    def nodes = jenkins.model.Jenkins.instance.nodes
+                    def runningNodes = []
 
+                    // Iterate over each node
+                    for (node in nodes) {
+                        def computer = node.toComputer()
+                        if (computer != null && computer.isOnline()) {
+                            // Get node name and IP address
+                            def nodeName = node.getNodeName()
+                            def ip = computer.hostName
+                            runningNodes.add([name: nodeName, ip: ip])
+                            echo "Running Node: ${nodeName} with IP: ${ip}"
+                            
+                            // Append to inventory file
+                            sh "echo ${ip} >> ${INVENTORY_FILE}"
+                        }
+                    }
+                    // Print the discovered nodes
+                    echo "Discovered Running Nodes: ${runningNodes}"
+                }
+            }
+        }
+
+
+        /*
         stage('Update Inventory') {
             steps {
                 script {
@@ -104,21 +136,21 @@ pipeline {
                         } else {
                             echo "Node ${node.getDisplayName()} is offline."
                         }
-                        /*
-                        def ip = computer.getHostName()
-                        echo "IP for ${node.getDisplayName()}: ${ip}"
+                        
+                        //def ip = computer.getHostName()
+                        //echo "IP for ${node.getDisplayName()}: ${ip}"
                         // Append IP to the inventory file
-                        sh "echo ${ip} >> ${INVENTORY_FILE}"
-                        sh "this is the ip: ${ip}"
-                        exit
-                        */
+                        //sh "echo ${ip} >> ${INVENTORY_FILE}"
+                        //sh "this is the ip: ${ip}"
+                        //exit
+                        
                     }
                 }
             }
         }
-        
+        */
 
-
+        /*
         stage('Deploy monitoring') {
             steps {
                 script {
@@ -146,26 +178,29 @@ pipeline {
                             #-i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini'
                          """
                     }
-                        /*
-                        withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
-                        for (vm in vms) {
-                            sshagent(['vm1']) {
-                            sh """
-                                ssh-agent sh -c '
-                                ssh-add ${SSH_KEY};
-                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
-                                ssh -o StrictHostKeyChecking=no jenkins@${vm} "ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini"';
-
-                                #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
-                                #scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
-                                #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
-                                #ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
-                                '
-                            """}
-                        }
-                        }*/
+                        
                     }
                 }        }
+        }
+        */
+
+        stage('Run Ansible Playbook') {
+            steps {
+                script {
+                    def inventory = readFile("${INVENTORY_FILE}")
+                    echo "Inventory File:\n${inventory}"
+                    
+                    def runningNodes = inventory.split('\n').findAll { it }
+                    runningNodes.each { ip ->
+                        sshagent(['vm-credentials-id']) {
+                            sh """
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} \
+                                'ansible-playbook /path/to/playbook.yml -i /path/to/inventory.ini'
+                            """
+                        }
+                    }
+                }
+            }
         }
 
         /* YOU DO NEED THIS ACTUALLY SO DON'T DELETE IT
