@@ -24,12 +24,12 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
-/*
+
         stage('Get Node Information') {
             steps {
                 script {
                     def onlineNodes = [:]
-
+                    echo "got inside node information"
                     // 1. Get Online Nodes
                     def response = httpRequest(
                         url: "${env.JENKINS_URL}/computer/api/json",
@@ -73,7 +73,7 @@ pipeline {
                 }
             }
         }
-*/
+
         stage('Update Inventory') {
             steps {
                 script {
