@@ -232,14 +232,8 @@ pipeline {
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
-                                echo '${ip}'
-                                echo 'simple test'
-                                ssh-agent sh -c '
-                                echo after the ssh-agent
                                 ssh-add ${SSH_KEY}
-                                echo after the ssh-add
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring
-                                echo after the scp
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} \
                                 ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini
                                 echo after the ansible-play
@@ -248,7 +242,7 @@ pipeline {
                             /*
                             sh """
                                 echo '${ip}'
-                                ssh-agent sh -c '
+                                ssh-agent sh -c ' ## note that i removed this earlier
                                 echo 'after the ssh-agent'
                                 ssh-add ${SSH_KEY};
                                 echo 'after the ssh-add'
