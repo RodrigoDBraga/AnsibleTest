@@ -88,21 +88,25 @@ pipeline {
 
                     // Initialize inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
-                    
+                    sh "echo '1'"
                     // Get all nodes
                     def nodes = jenkins.model.Jenkins.instance.nodes
                     def runningNodes = []
-            
+                    sh "echo '2'"
                     // Iterate over each node
                     for (node in nodes) {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
                             // Get node name and IP address
+                            sh "echo '3'"
                             def nodeName = node.getNodeName()
                             def ip = computer.hostName
+                            sh "echo '4'"
                             //runningNodes.add([name: nodeName, ip: ip])
                             runningNodes.add(ip)
+                            sh "echo '5'"
                             echo "Running Node: ${nodeName} with IP: ${ip}"
+                            sh "echo '6'"
                             echo "${ip}"
                             echo "${INVENTORY_FILE}"
                             // Append to inventory file
