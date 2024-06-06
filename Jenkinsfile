@@ -28,7 +28,7 @@ pipeline {
                     script {
                         //def vms = ['vm1', 'vm2']
                         def vms = ['vm1']
-                        
+                        /*
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
                             sh """
@@ -40,8 +40,20 @@ pipeline {
                             """
                         }
                     }
+
+                        */
+                        withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
+                        for (vm in vms) {
+                            sshagent(['vm1']) {
+                                sh "ssh-agent sh -c '"
+                                sh "ssh-add ${SSH_KEY};"
+                                sh "scp -r client/ jenkins@${vm}:/home/jenkins/"
+                                sh "ssh jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
+                            }
+                        }
+                        }
+                    }
                 }
-        }
         }
 
 
