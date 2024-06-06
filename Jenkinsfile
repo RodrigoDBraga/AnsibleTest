@@ -46,6 +46,7 @@ pipeline {
                         echo "IP for ${node.getDisplayName()}: ${ip}"
                         // Append IP to the inventory file
                         sh "echo ${ip} >> ${INVENTORY_FILE}"
+                        sh "this is the ip: ${ip}"
                     }
                 }
             }
