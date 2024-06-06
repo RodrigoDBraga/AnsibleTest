@@ -44,12 +44,20 @@ pipeline {
                         */
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
+                            /*
                             sshagent(['vm1']) {
                                 sh "ssh-agent sh -c '"
                                 sh "ssh-add ${SSH_KEY};"
                                 sh "scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/"
                                 sh "ssh -o StrictHostKeyChecking=no jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
-                            }
+                            }*/
+                            sh """
+                                ssh-agent sh -c '
+                                ssh-add ${SSH_KEY};
+                                scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
+                                ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
+                                '
+                            """
                         }
                         }
                     }
