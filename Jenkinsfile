@@ -101,7 +101,7 @@ pipeline {
                             echo "Running Node: ${nodeName} with IP: ${ip}"
                         }
                     }
-                    def nodes = 0
+                    nodes = 0
                     echo "${runningNodes}"
                     // Write IPs to the inventory file
                     for (ip in runningNodes) {
