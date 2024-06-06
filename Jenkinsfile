@@ -100,9 +100,10 @@ pipeline {
                             // Get node name and IP address
                             def nodeName = node.getNodeName()
                             def ip = computer.hostName
-                            runningNodes.add([name: nodeName, ip: ip])
+                            //runningNodes.add([name: nodeName, ip: ip])
+                            runningNodes.add(ip)
                             echo "Running Node: ${nodeName} with IP: ${ip}"
-                            sh "echo ${ip} "
+                            sh "echo ${ip}"
                             // Append to inventory file
                             sh "echo ${ip} >> ${INVENTORY_FILE}"
                             sh "echo 'got out'"
