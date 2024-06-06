@@ -42,9 +42,9 @@ pipeline {
                     }
 
                         */
-                         def workspacePath = env.WORKSPACE
-                        def jobName = env.JOB_NAME.replaceAll("/", "_")  // Replace slashes in job name with underscores
-                        def sourcePath = "${workspacePath}/${jobName}/"  // Full path to the job directory
+                        def workspacePath = env.WORKSPACE
+                        //def jobName = env.JOB_NAME.replaceAll("/", "_")  // Replace slashes in job name with underscores
+                        //def sourcePath = "${workspacePath}/${jobName}/"  // Full path to the job directory
                         //def jobName = env.JOB_NAME.replaceAll("/", "_")
                         //${jobName}
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
@@ -53,7 +53,7 @@ pipeline {
                             sh """
                                 ssh-agent sh -c '
                                 ssh-add ${SSH_KEY};
-                                scp -o StrictHostKeyChecking=no -r ${sourcePath}/ jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
+                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
                                 #scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
                                 #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
                                 #ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
