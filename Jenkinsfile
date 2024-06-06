@@ -11,9 +11,9 @@ pipeline {
         // Set this to 'false' in client environments (discover existing containers)
         //CREATE_TEST_CONTAINER = 'true' 
         
-        workspacePath = env.'WORKSPACE'
+        //++++workspacePath = env.WORKSPACE
         
-        INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+        //++++INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
         // Optional: Filter for client containers (adjust based on naming conventions)
         //CLIENT_CONTAINER_FILTER = 'name=client-' 
     }
@@ -28,6 +28,9 @@ pipeline {
         stage('Update Inventory') {
             steps {
                 script {
+                    workspacePath = env.WORKSPACE
+        
+                   INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
                     sh "echo '${INVENTORY_FILE}'"
                     // Clear the existing content in the inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
