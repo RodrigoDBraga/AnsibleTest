@@ -113,6 +113,7 @@ pipeline {
                     sh "echo '[Monitoring]' >> ${INVENTORY_FILE}"
                     echo "got out222"
                     sh "echo '${ip}' >> ${INVENTORY_FILE}"
+                    sh "echo ${ip} >> ${INVENTORY_FILE}"
                     echo "Discovered Running Nodes: ${runningNodes}"
                 }
             }
