@@ -10,6 +10,7 @@ pipeline {
         // Set this to 'true' for testing (create a container)
         // Set this to 'false' in client environments (discover existing containers)
         //CREATE_TEST_CONTAINER = 'true' 
+        def workspacePath = env.WORKSPACE
         INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
         // Optional: Filter for client containers (adjust based on naming conventions)
         //CLIENT_CONTAINER_FILTER = 'name=client-' 
