@@ -37,17 +37,27 @@ pipeline {
                     sh "echo 'outside of the first echo'"
                     // Discover IPs of all nodes labeled with 'vm'
                     def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
-                        node.getLabelString()//.contains('vm1')
+                        node.getLabelString().contains('vm')
                     }
                     sh "echo ${vmNodes}"
                     vmNodes.each { node ->
                         def computer = node.toComputer()
+                        
+                        if (computer.isOnline()) { // Check if the node is online
+                            def ip = computer.getHostName()
+                            echo "IP for ${node.getDisplayName()}: ${ip}"
+                            sh "echo ${ip} >> ${INVENTORY_FILE}"
+                        } else {
+                            echo "Node ${node.getDisplayName()} is offline."
+                        }
+                        /*
                         def ip = computer.getHostName()
                         echo "IP for ${node.getDisplayName()}: ${ip}"
                         // Append IP to the inventory file
                         sh "echo ${ip} >> ${INVENTORY_FILE}"
                         sh "this is the ip: ${ip}"
                         exit
+                        */
                     }
                 }
             }
