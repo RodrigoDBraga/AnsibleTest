@@ -111,6 +111,7 @@ pipeline {
                         }
                     }
                     // Print the discovered nodes
+                    sh "echo '5'"
                     sh "echo '[Monitoring]' >> ${INVENTORY_FILE}"
                     echo "got out222"
                     sh "echo '${ip}' >> ${INVENTORY_FILE}"
