@@ -25,29 +25,51 @@ pipeline {
             }
         }
 
-        stage('Get Online Nodes') {
+        stage('Get Node Information') {
             steps {
                 script {
-                    def onlineNodes = []
+                    def onlineNodes = [:]
 
-                    // Make a request to the Jenkins API to get computer information
+                    // 1. Get Online Nodes
                     def response = httpRequest(
                         url: "${env.JENKINS_URL}/computer/api/json",
                         httpMode: 'GET',
-                        authentication: 'jenkins-user' // Replace with your Jenkins credentials ID
+                        authentication: 'jenkins-user' // Replace with your credentials ID
                     )
 
-                    // Parse the JSON response
                     def computers = jsonParse(response.content).computer
 
-                    // Iterate through the computers and collect online nodes
                     for (computer in computers) {
-                        if (computer.offline == false) { 
-                            onlineNodes.add(computer.displayName)
-                        }
+                        if (!computer.offline) {
+                            def nodeName = computer.displayName
+
+                            // 2. Get Possible IPs/Hostnames for Online Nodes
+                            try {
+                                def possibleNamesFuture = Computer.threadPoolForRemoting.submit(new Callable<List<String>, Exception>() {
+                                    @Override
+                                    List<String> call() throws Exception {
+                                        def channel = Jenkins.instance.getNode(nodeName).computer.getChannel()
+                                        if (channel != null) {
+                                            return channel.call(new Computer.ListPossibleNames())
+                                        } else {
+                                            return []
+                                        }
+                                    }
+                                })
+
+                                def possibleNames = possibleNamesFuture.get() // Get the result
+                                onlineNodes[nodeName] = possibleNames 
+                            } catch (Exception ex) {
+                                echo "Error getting possible names for ${nodeName}: ${ex.message}"
+                                onlineNodes[nodeName] = ["Error retrieving IPs"] // Store an error message
+                            }
+                        } 
                     }
 
-                    echo "Online Nodes: ${onlineNodes}"
+                    // 3. Output Results
+                    onlineNodes.each { nodeName, ips ->
+                        echo "Node: ${nodeName}, Possible IPs/Hostnames: ${ips}"
+                    }
                 }
             }
         }
