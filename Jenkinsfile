@@ -82,9 +82,7 @@ pipeline {
         stage('Discover Running Nodes') {
             steps {
                 script {
-                    
                     workspacePath = env.WORKSPACE
-        
                     INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
                     // Initialize inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
@@ -97,16 +95,14 @@ pipeline {
                     for (node in nodes) {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
-                            
                             def nodeName = node.getNodeName()
                             def ip = computer.hostName
                             runningNodes.add(ip)
-                            
                             echo "Running Node: ${nodeName} with IP: ${ip}"
-                            
                         }
                     }
-
+                    def nodes = 0
+                    echo "${runningNodes}"
                     // Write IPs to the inventory file
                     for (ip in runningNodes) {
                         sh "echo '${ip}' >> ${INVENTORY_FILE}"
@@ -120,37 +116,24 @@ pipeline {
                     /*
                     // Initialize inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
-                    sh "echo '1'"
                     // Get all nodes
                     def nodes = jenkins.model.Jenkins.instance.nodes
                     def runningNodes = []
-                    sh "echo '2'"
                     // Iterate over each node
                     for (node in nodes) {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
                             // Get node name and IP address
-                            sh "echo '3'"
                             def nodeName = node.getNodeName()
                             def ip = computer.hostName
-                            sh "echo '4'"
                             //runningNodes.add([name: nodeName, ip: ip])
                             runningNodes.add(ip)
-                            sh "echo '5'"
                             echo "Running Node: ${nodeName} with IP: ${ip}"
-                            sh "echo '6'"
-                            echo "${ip}"
-                            echo "${INVENTORY_FILE}"
                             // Append to inventory file
-                            echo "${ip} >> ${INVENTORY_FILE}"
-                            echo "got out"
+                            echo "${ip} >> ${INVENTORY_FILE}"  
                         }
                     }
                     // Print the discovered nodes
-                    sh "echo '5'"
-                    sh "echo '[Monitoring]' >> ${INVENTORY_FILE}"
-                    echo "got out222"
-                    sh "echo '${ip}' >> ${INVENTORY_FILE}"
                     sh "echo ${ip} >> ${INVENTORY_FILE}"
                     echo "Discovered Running Nodes: ${runningNodes}"
                     */
