@@ -25,12 +25,39 @@ pipeline {
             }
         }
 
+        stage('Get Online Nodes') {
+            steps {
+                script {
+                    def onlineNodes = []
+
+                    // Make a request to the Jenkins API to get computer information
+                    def response = httpRequest(
+                        url: "${env.JENKINS_URL}/computer/api/json",
+                        httpMode: 'GET',
+                        authentication: 'jenkins-user' // Replace with your Jenkins credentials ID
+                    )
+
+                    // Parse the JSON response
+                    def computers = jsonParse(response.content).computer
+
+                    // Iterate through the computers and collect online nodes
+                    for (computer in computers) {
+                        if (computer.offline == false) { 
+                            onlineNodes.add(computer.displayName)
+                        }
+                    }
+
+                    echo "Online Nodes: ${onlineNodes}"
+                }
+            }
+        }
+
         stage('Update Inventory') {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
         
-                   INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
                     sh "echo '${INVENTORY_FILE}'"
                     // Clear the existing content in the inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
