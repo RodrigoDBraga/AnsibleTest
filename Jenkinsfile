@@ -104,6 +104,7 @@ pipeline {
                             runningNodes.add(ip)
                             echo "Running Node: ${nodeName} with IP: ${ip}"
                             echo "${ip}"
+                            echo "${INVENTORY_FILE}"
                             // Append to inventory file
                             echo "${ip} >> ${INVENTORY_FILE}"
                             echo "got out"
