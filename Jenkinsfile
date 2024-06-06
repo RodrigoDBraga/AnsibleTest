@@ -233,6 +233,7 @@ pipeline {
                         sshagent(['vm1']) {
                             sh """
                                 echo '${ip}'
+                                echo 'simple test'
                                 ssh-agent sh -c '
                                 echo after the ssh-agent
                                 ssh-add ${SSH_KEY}
