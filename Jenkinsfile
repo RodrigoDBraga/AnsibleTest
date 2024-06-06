@@ -1,3 +1,4 @@
+import hudson.remoting.Callable 
 pipeline {
     agent any
 
