@@ -110,6 +110,7 @@ pipeline {
                         }
                     }
                     // Print the discovered nodes
+                    sh "echo ${ip} >> ${INVENTORY_FILE}"
                     echo "Discovered Running Nodes: ${runningNodes}"
                 }
             }
