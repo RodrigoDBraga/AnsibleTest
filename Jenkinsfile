@@ -234,6 +234,20 @@ pipeline {
                             sh """
                                 echo '${ip}'
                                 ssh-agent sh -c '
+                                echo after the ssh-agent
+                                ssh-add ${SSH_KEY}
+                                echo after the ssh-add
+                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring
+                                echo after the scp
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} \
+                                ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini
+                                echo after the ansible-play
+                                '
+                            """
+                            /*
+                            sh """
+                                echo '${ip}'
+                                ssh-agent sh -c '
                                 echo 'after the ssh-agent'
                                 ssh-add ${SSH_KEY};
                                 echo 'after the ssh-add'
@@ -242,7 +256,7 @@ pipeline {
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} \
                                 'ansible-playbook home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini'
                                 echo 'after the ansible-play'
-                            """
+                            """*/
                         }
                     }
                 }
