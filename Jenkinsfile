@@ -30,7 +30,7 @@ pipeline {
                         def vms = ['vm1']
                         
                         for (vm in vms) {
-                            sshagent(['vm1-credentials-id']) {
+                            sshagent(['vm1']) {
                                 sh "scp -r client/ jenkins@${vm}:/home/jenkins/"
                                 sh "ssh jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
                             }
