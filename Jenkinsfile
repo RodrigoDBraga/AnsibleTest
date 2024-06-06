@@ -39,7 +39,7 @@ pipeline {
                     def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
                         node.getLabelString().contains('vm')
                     }
-                    
+                    sh "echo ${vmNodes}"
                     vmNodes.each { node ->
                         def computer = node.toComputer()
                         def ip = computer.getHostName()
