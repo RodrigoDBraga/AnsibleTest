@@ -42,14 +42,16 @@ pipeline {
                     }
 
                         */
+                        def jobName = env.JOB_NAME.replaceAll("/", "_")
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
                             sshagent(['vm1']) {
                             sh """
                                 ssh-agent sh -c '
                                 ssh-add ${SSH_KEY};
-                                scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
-                                ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
+                                scp -o StrictHostKeyChecking=no -r ${jobName}/ jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
+                                #scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
+                                #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
                                 #ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
                                 '
                             """}
@@ -139,9 +141,17 @@ pipeline {
                         ansible-playbook -i playbooks/playbook.yml playbooks/inventory.ini 
                     '''
                     */
+                    /*
+                    //this is the current version i am running, the one above this doesn't work because the -i needs to be before the inventory and not the playbook
                     sh '''
                         ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
-                    '''
+                    '''*/
+                    //withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')])
+                    withCredentials([usernamePassword(credentialsId: 'ansible-credentials-id', usernameVariable: 'ANSIBLE_USER', passwordVariable: 'ANSIBLE_PASSWORD')]) {
+                        sh '''
+                            ansible-playbook -i playbooks/inventory.ini playbooks/playbook.yml
+                        '''
+            }
                 
             }
         }
