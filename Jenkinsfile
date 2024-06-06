@@ -88,7 +88,7 @@ pipeline {
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
                     sh "echo '1'"
                     sh "echo ${INVENTORY_FILE}"
-                    sh "echo whoami"
+                    sh "whoami"
                     // Get all nodes and their IPs
                     def nodes = jenkins.model.Jenkins.instance.nodes
                     def runningNodes = []
