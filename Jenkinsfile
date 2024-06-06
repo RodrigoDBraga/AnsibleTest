@@ -54,6 +54,9 @@ pipeline {
                                 ssh-agent sh -c '
                                 ssh-add ${SSH_KEY};
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
+                                ssh -o StrictHostKeyChecking=no jenkins@${vm} "ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini"';
+
+                                #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
                                 #scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
                                 #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
                                 #ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
@@ -151,10 +154,13 @@ pipeline {
                         ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
                     '''*/
                     //withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')])
+                    /*
                     withCredentials([usernamePassword(credentialsId: 'ansible-credentials-id', usernameVariable: 'ANSIBLE_USER', passwordVariable: 'ANSIBLE_PASSWORD')]) {
                         sh '''
                             ansible-playbook -i playbooks/inventory.ini playbooks/playbook.yml
                         '''
+                        */
+                        echo "with steel and strength"
             }
                 
             }
