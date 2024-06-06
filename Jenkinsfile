@@ -37,7 +37,7 @@ pipeline {
                     sh "echo 'outside of the first echo'"
                     // Discover IPs of all nodes labeled with 'vm'
                     def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
-                        node.getLabelString().contains('vm')
+                        node.getLabelString()//.contains('vm1')
                     }
                     sh "echo ${vmNodes}"
                     vmNodes.each { node ->
@@ -47,6 +47,7 @@ pipeline {
                         // Append IP to the inventory file
                         sh "echo ${ip} >> ${INVENTORY_FILE}"
                         sh "this is the ip: ${ip}"
+                        exit
                     }
                 }
             }
