@@ -24,7 +24,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
-
+/*
         stage('Get Node Information') {
             steps {
                 script {
@@ -73,7 +73,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Update Inventory') {
             steps {
                 script {
