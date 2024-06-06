@@ -11,7 +11,7 @@ pipeline {
         // Set this to 'false' in client environments (discover existing containers)
         //CREATE_TEST_CONTAINER = 'true' 
         
-        workspacePath = env.WORKSPACE
+        workspacePath = env.'WORKSPACE'
         
         INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
         // Optional: Filter for client containers (adjust based on naming conventions)
