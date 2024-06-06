@@ -105,8 +105,8 @@ pipeline {
                             echo "Running Node: ${nodeName} with IP: ${ip}"
                             echo "${ip}"
                             // Append to inventory file
-                            sh "echo ${ip} >> ${INVENTORY_FILE}"
-                            sh "echo 'got out'"
+                            echo "${ip} >> ${INVENTORY_FILE}"
+                            echo "got out"
                         }
                     }
                     // Print the discovered nodes
