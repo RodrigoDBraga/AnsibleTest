@@ -47,8 +47,8 @@ pipeline {
                             sshagent(['vm1']) {
                                 sh "ssh-agent sh -c '"
                                 sh "ssh-add ${SSH_KEY};"
-                                sh "scp -r client/ jenkins@${vm}:/home/jenkins/"
-                                sh "ssh jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
+                                sh "scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/"
+                                sh "ssh -o StrictHostKeyChecking=no jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
                             }
                         }
                         }
