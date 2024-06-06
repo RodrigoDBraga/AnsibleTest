@@ -43,13 +43,14 @@ pipeline {
 
                         */
                         def jobName = env.JOB_NAME.replaceAll("/", "_")
+                        //${jobName}
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
                             sshagent(['vm1']) {
                             sh """
                                 ssh-agent sh -c '
                                 ssh-add ${SSH_KEY};
-                                scp -o StrictHostKeyChecking=no -r ${jobName}/ jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
+                                scp -o StrictHostKeyChecking=no -r AnsibleTest/ jenkins@${vm}:/home/jenkins/iProlepsisMonitoring;
                                 #scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
                                 #ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini 
                                 #ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
