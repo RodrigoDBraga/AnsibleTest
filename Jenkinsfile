@@ -46,33 +46,33 @@ pipeline {
         
 
 
-        stage('Deploy Monitoring') {
-                steps {
-                    script {
-                        //def vms = ['vm1', 'vm2']
-                        def vms = ['172.17.0.3']
+        stage('Deploy monitoring') {
+            steps {
+                script {
+                    //def vms = ['vm1', 'vm2']
+                    def vms = ['172.17.0.3']
                         
-                        def workspacePath = env.WORKSPACE
+                    def workspacePath = env.WORKSPACE
                         
-                        def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
+                    def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
                             node.getLabelString().contains('vm')
-                        }
+                    }
                         
-                        vmNodes.each { node ->
-                        def computer = node.toComputer()
-                        def ip = computer.getHostName()
-                        sshagent(['vm1']) {
-                            sh """
-                                ssh-agent sh -c '
-                                ssh-add ${SSH_KEY};
-                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring;
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} "ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini"';
+                    vmNodes.each { node ->
+                    def computer = node.toComputer()
+                    def ip = computer.getHostName()
+                    sshagent(['vm1']) {
+                        sh """
+                            ssh-agent sh -c '
+                            ssh-add ${SSH_KEY};
+                            scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring;
+                            ssh -o StrictHostKeyChecking=no jenkins@${ip} "ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini"';
 
-                                #ssh -o StrictHostKeyChecking=no jenkins@${ip} \
-                                #'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml \
-                                #-i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini'
-                            """
-                        }
+                            #ssh -o StrictHostKeyChecking=no jenkins@${ip} \
+                            #'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml \
+                            #-i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini'
+                         """
+                    }
                         /*
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
