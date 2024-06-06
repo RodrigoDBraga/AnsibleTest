@@ -9,10 +9,10 @@ pipeline {
     environment {
         // Set this to 'true' for testing (create a container)
         // Set this to 'false' in client environments (discover existing containers)
-        CREATE_TEST_CONTAINER = 'true' 
-
+        //CREATE_TEST_CONTAINER = 'true' 
+        INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
         // Optional: Filter for client containers (adjust based on naming conventions)
-        CLIENT_CONTAINER_FILTER = 'name=client-' 
+        //CLIENT_CONTAINER_FILTER = 'name=client-' 
     }
 
     stages {   
@@ -22,31 +22,58 @@ pipeline {
             }
         }
 
+        stage('Update Inventory') {
+            steps {
+                script {
+                    // Clear the existing content in the inventory file
+                    sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
+                    
+                    // Discover IPs of all nodes labeled with 'vm'
+                    def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
+                        node.getLabelString().contains('vm')
+                    }
+                    
+                    vmNodes.each { node ->
+                        def computer = node.toComputer()
+                        def ip = computer.getHostName()
+                        echo "IP for ${node.getDisplayName()}: ${ip}"
+                        // Append IP to the inventory file
+                        sh "echo ${ip} >> ${INVENTORY_FILE}"
+                    }
+                }
+            }
+        }
+        
+
 
         stage('Deploy Monitoring') {
                 steps {
                     script {
                         //def vms = ['vm1', 'vm2']
                         def vms = ['172.17.0.3']
-                        /*
-                        withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
-                        for (vm in vms) {
+                        
+                        def workspacePath = env.WORKSPACE
+                        
+                        def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
+                            node.getLabelString().contains('vm')
+                        }
+                        
+                        vmNodes.each { node ->
+                        def computer = node.toComputer()
+                        def ip = computer.getHostName()
+                        sshagent(['vm1']) {
                             sh """
                                 ssh-agent sh -c '
                                 ssh-add ${SSH_KEY};
-                                scp -o StrictHostKeyChecking=no -r client/ jenkins@${vm}:/home/jenkins/;
-                                ssh -o StrictHostKeyChecking=no jenkins@${vm} "docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d"
-                                '
+                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring;
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} "ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini"';
+
+                                #ssh -o StrictHostKeyChecking=no jenkins@${ip} \
+                                #'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml \
+                                #-i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini'
                             """
                         }
-                    }
-
-                        */
-                        def workspacePath = env.WORKSPACE
-                        //def jobName = env.JOB_NAME.replaceAll("/", "_")  // Replace slashes in job name with underscores
-                        //def sourcePath = "${workspacePath}/${jobName}/"  // Full path to the job directory
-                        //def jobName = env.JOB_NAME.replaceAll("/", "_")
-                        //${jobName}
+                        /*
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
                             sshagent(['vm1']) {
@@ -63,7 +90,7 @@ pipeline {
                                 '
                             """}
                         }
-                        }
+                        }*/
                     }
                 }
         }
