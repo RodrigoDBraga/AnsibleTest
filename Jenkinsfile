@@ -93,18 +93,17 @@ pipeline {
                     // Get all nodes and their IPs
                     def nodes = jenkins.model.Jenkins.instance.nodes
                     def runningNodes = []
-                    sh "echo '2'"
 
                     for (node in nodes) {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
-                            sh "echo '3'"
+                            
                             def nodeName = node.getNodeName()
                             def ip = computer.hostName
                             runningNodes.add(ip)
-                            sh "echo '4'"
+                            
                             echo "Running Node: ${nodeName} with IP: ${ip}"
-                            sh "echo '5'"
+                            
                         }
                     }
 
