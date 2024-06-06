@@ -228,7 +228,7 @@ pipeline {
                     
                     def runningNodes = inventory.split('\n').findAll { it }
                     runningNodes.each { ip ->
-                        sshagent(['vm-credentials-id']) {
+                        sshagent(['vm1']) {
                             sh """
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} \
                                 'ansible-playbook /path/to/playbook.yml -i /path/to/inventory.ini'
