@@ -226,7 +226,8 @@ pipeline {
                     def inventory = readFile("${INVENTORY_FILE}")
                     echo "Inventory File:\n${inventory}"
                     
-                    def runningNodes = inventory.split('\n').findAll { it }
+                    //def runningNodes = inventory.split('\n').findAll { it }
+                    def runningNodes = inventory.split('\n').findAll { it && !it.startsWith('[') }
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
