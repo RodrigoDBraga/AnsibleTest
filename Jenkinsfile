@@ -25,7 +25,7 @@ pipeline {
         stage('Update Inventory') {
             steps {
                 script {
-                    sh "echo 'Inside update inventory'"
+                    sh "echo '${INVENTORY_FILE}'"
                     // Clear the existing content in the inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
                     sh "echo 'outside of the first echo'"
