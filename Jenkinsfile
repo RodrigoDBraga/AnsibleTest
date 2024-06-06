@@ -232,7 +232,7 @@ pipeline {
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
-                                echo 'before the ssh-agent'
+                                echo '${ip}'
                                 ssh-agent sh -c '
                                 echo 'after the ssh-agent'
                                 ssh-add ${SSH_KEY};
