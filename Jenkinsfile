@@ -1,4 +1,8 @@
-import hudson.remoting.Callable 
+import hudson.model.Computer
+import hudson.remoting.Callable
+import hudson.remoting.Future
+import org.jenkinsci.remoting.RoleChecker
+
 pipeline {
     agent any
 
