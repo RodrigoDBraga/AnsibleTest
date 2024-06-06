@@ -82,13 +82,17 @@ pipeline {
         stage('Discover Running Nodes') {
             steps {
                 script {
+                    workspacePath = env.WORKSPACE
+        
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+
                     // Initialize inventory file
                     sh "echo '[all]' > ${INVENTORY_FILE}"
                     
                     // Get all nodes
                     def nodes = jenkins.model.Jenkins.instance.nodes
                     def runningNodes = []
-
+            
                     // Iterate over each node
                     for (node in nodes) {
                         def computer = node.toComputer()
@@ -187,6 +191,10 @@ pipeline {
         stage('Run Ansible Playbook') {
             steps {
                 script {
+                    workspacePath = env.WORKSPACE
+        
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+                    
                     def inventory = readFile("${INVENTORY_FILE}")
                     echo "Inventory File:\n${inventory}"
                     
