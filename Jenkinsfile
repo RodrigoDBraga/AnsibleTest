@@ -82,10 +82,43 @@ pipeline {
         stage('Discover Running Nodes') {
             steps {
                 script {
+                    
                     workspacePath = env.WORKSPACE
         
                     INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+                    // Initialize inventory file
+                    sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
+                    sh "echo '1'"
 
+                    // Get all nodes and their IPs
+                    def nodes = jenkins.model.Jenkins.instance.nodes
+                    def runningNodes = []
+                    sh "echo '2'"
+
+                    for (node in nodes) {
+                        def computer = node.toComputer()
+                        if (computer != null && computer.isOnline()) {
+                            sh "echo '3'"
+                            def nodeName = node.getNodeName()
+                            def ip = computer.hostName
+                            runningNodes.add(ip)
+                            sh "echo '4'"
+                            echo "Running Node: ${nodeName} with IP: ${ip}"
+                            sh "echo '5'"
+                        }
+                    }
+
+                    // Write IPs to the inventory file
+                    for (ip in runningNodes) {
+                        sh "echo '${ip}' >> ${INVENTORY_FILE}"
+                    }
+
+                    sh "echo '6'"
+
+                    // Print the discovered nodes
+                    echo "Discovered Running Nodes: ${runningNodes.join(', ')}"
+
+                    /*
                     // Initialize inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
                     sh "echo '1'"
@@ -121,6 +154,7 @@ pipeline {
                     sh "echo '${ip}' >> ${INVENTORY_FILE}"
                     sh "echo ${ip} >> ${INVENTORY_FILE}"
                     echo "Discovered Running Nodes: ${runningNodes}"
+                    */
                 }
             }
         }
