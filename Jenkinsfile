@@ -25,9 +25,10 @@ pipeline {
         stage('Update Inventory') {
             steps {
                 script {
+                    sh "echo 'Inside update inventory'"
                     // Clear the existing content in the inventory file
                     sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
-                    
+                    sh "echo 'outside of the first echo'"
                     // Discover IPs of all nodes labeled with 'vm'
                     def vmNodes = jenkins.model.Jenkins.instance.nodes.findAll { node ->
                         node.getLabelString().contains('vm')
