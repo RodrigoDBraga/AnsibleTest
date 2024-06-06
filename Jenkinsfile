@@ -232,7 +232,7 @@ pipeline {
                         sshagent(['vm1']) {
                             sh """
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} \
-                                'ansible-playbook /path/to/playbook.yml -i /path/to/inventory.ini'
+                                'ansible-playbook playbooks/playbook.yml -i playbooks/inventory.ini'
                             """
                         }
                     }
