@@ -21,6 +21,25 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
+
+
+        stage('Deploy Monitoring') {
+                steps {
+                    script {
+                        //def vms = ['vm1', 'vm2']
+                        def vms = ['vm1']
+                        
+                        for (vm in vms) {
+                            sshagent(['vm1-credentials-id']) {
+                                sh "scp -r client/ jenkins@${vm}:/home/jenkins/"
+                                sh "ssh jenkins@${vm} 'docker-compose -f /home/jenkins/client/docker-compose-client-monitor.yml up -d'"
+                            }
+                        }
+                    }
+                }
+        }
+
+
         /* YOU DO NEED THIS ACTUALLY SO DON'T DELETE IT
         stage('Install Ansible') {
             steps {
@@ -31,7 +50,7 @@ pipeline {
             }
         }*/
         
-        
+        /*
         stage('Container Setup') {
             steps {
                 script {
@@ -59,8 +78,9 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         
+        /*
         stage('Update Ansible Inventory') {
             steps {
                 script {
@@ -73,7 +93,7 @@ pipeline {
                     sh "cat ansible/inventory.ini" // Optional: Print the inventory file
                 }
             }
-        }
+        }*/
 
         /*
         stage('Get Docker Container IPs') {
