@@ -27,7 +27,7 @@ pipeline {
                 steps {
                     script {
                         //def vms = ['vm1', 'vm2']
-                        def vms = ['vm1']
+                        def vms = ['172.17.0.3']
                         /*
                         withCredentials([sshUserPrivateKey(credentialsId: 'vm1', keyFileVariable: 'SSH_KEY')]) {
                         for (vm in vms) {
