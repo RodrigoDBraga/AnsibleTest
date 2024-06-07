@@ -232,11 +232,12 @@ pipeline {
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
-                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring
+                                rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${workspacePath}/ jenkins@${ip}:/home/jenkins/iProlepsisMonitoring/
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} "ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini"';
                             """
                             /*
                             sh """
+                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  ## changed this to the rsync for testing purposes
                                 echo '${ip}'
                                 ssh-agent sh -c ' ## note that i removed this earlier
                                 echo 'after the ssh-agent'
