@@ -232,7 +232,9 @@ pipeline {
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
-                                rm -r /tmp/attempt_to_fix_scp_issue
+                                if [ -d "tmp/.git" ]; then
+                                    rm -rf "tmp/.git"
+                                fi
                                 mv ${workspacePath}/.git /tmp/.git
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
