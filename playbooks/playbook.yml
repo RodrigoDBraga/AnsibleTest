@@ -1,8 +1,15 @@
 ---
 - hosts: localhost
+  connection: local
   become: yes
   roles:
     - monitoring
+
+
+#- hosts: localhost
+#  become: yes
+#  roles:
+#    - monitoring
   
 
 #- hosts: all
