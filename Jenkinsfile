@@ -216,7 +216,8 @@ pipeline {
                 }        }
         }
         */
-
+        
+        
         stage('Run Ansible Playbook') {
             steps {
                 script {
@@ -232,7 +233,8 @@ pipeline {
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
-                                ssh-keyscan 172.17.0.2 >> ~/.ssh/known_hosts
+                                ssh-keyscan ${ip} >> ~/.ssh/known_hosts
+                                ssh-add ~/.ssh/id_rsa
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
                                 fi
