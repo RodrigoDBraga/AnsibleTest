@@ -218,10 +218,11 @@ pipeline {
                                 mv ${workspacePath}/.git /tmp/.git
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini';
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
                             """
                             /*
                             sh """
+                                #####################this is what you had previously ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini';
                                 rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${workspacePath}/ jenkins@${ip}:/home/jenkins/iProlepsisMonitoring/ ## this might be an alternative to scp
                                 echo '${ip}'
                                 ssh-agent sh -c ' ## note that i removed this earlier
