@@ -231,7 +231,7 @@ pipeline {
                     //def runningNodes = inventory.split('\n').findAll { it }
                     def runningNodes = inventory.split('\n').findAll { it && !it.startsWith('[') }
                     runningNodes.each { ip ->
-                        sshagent(['jenkins']) {
+                        sshagent(['vm1']) {
                             sh """
                                 ssh-keyscan ${ip} >> ~/.ssh/known_hosts
                                 
