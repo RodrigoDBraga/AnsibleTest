@@ -227,14 +227,14 @@ pipeline {
 
                     def inventory = readFile("${INVENTORY_FILE}")
                     echo "Inventory File:\n${inventory}"
-                    
+                    //ssh-add ~/.ssh/id_rsa
                     //def runningNodes = inventory.split('\n').findAll { it }
                     def runningNodes = inventory.split('\n').findAll { it && !it.startsWith('[') }
                     runningNodes.each { ip ->
-                        sshagent(['vm1']) {
+                        sshagent(['jenkins']) {
                             sh """
                                 ssh-keyscan ${ip} >> ~/.ssh/known_hosts
-                                ssh-add ~/.ssh/id_rsa
+                                
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
                                 fi
