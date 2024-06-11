@@ -7,6 +7,13 @@
   debug:
     msg: "Current version of requests: {{ requests_version.stdout }}"
   
+- name: Gather facts about the host
+  setup:
+
+- name: Print the IP address of the current machine
+  debug:
+    msg: "Current IP address: {{ ansible_default_ipv4.address }}"
+
 - name: Clone monitoring repository
   git:
     #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
