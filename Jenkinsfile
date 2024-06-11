@@ -232,6 +232,7 @@ pipeline {
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
                             sh """
+                                ssh-keyscan 172.17.0.2 >> ~/.ssh/known_hosts
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
                                 fi
