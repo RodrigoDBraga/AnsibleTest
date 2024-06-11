@@ -232,9 +232,8 @@ pipeline {
                     def runningNodes = inventory.split('\n').findAll { it && !it.startsWith('[') }
                     runningNodes.each { ip ->
                         sshagent(['vm1']) {
+                            sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts"
                             sh """
-                                ssh-keyscan ${ip} >> ~/.ssh/known_hosts
-                                
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
                                 fi
