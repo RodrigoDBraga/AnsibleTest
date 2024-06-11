@@ -114,30 +114,7 @@ pipeline {
                     // Print the discovered nodes
                     echo "Discovered Running Nodes: ${runningNodes.join(', ')}"
 
-                    /*
-                    // Initialize inventory file
-                    sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
-                    // Get all nodes
-                    def nodes = jenkins.model.Jenkins.instance.nodes
-                    def runningNodes = []
-                    // Iterate over each node
-                    for (node in nodes) {
-                        def computer = node.toComputer()
-                        if (computer != null && computer.isOnline()) {
-                            // Get node name and IP address
-                            def nodeName = node.getNodeName()
-                            def ip = computer.hostName
-                            //runningNodes.add([name: nodeName, ip: ip])
-                            runningNodes.add(ip)
-                            echo "Running Node: ${nodeName} with IP: ${ip}"
-                            // Append to inventory file
-                            echo "${ip} >> ${INVENTORY_FILE}"  
-                        }
-                    }
-                    // Print the discovered nodes
-                    sh "echo ${ip} >> ${INVENTORY_FILE}"
-                    echo "Discovered Running Nodes: ${runningNodes}"
-                    */
+                    
                 }
             }
         }
