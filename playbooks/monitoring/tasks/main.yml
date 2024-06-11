@@ -1,4 +1,8 @@
 ---
+- name: Print the current version of the requests package
+  command: pip show requests | grep Version
+  register: requests_version
+  
 - name: Clone monitoring repository
   git:
     #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
