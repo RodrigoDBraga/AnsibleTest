@@ -6,6 +6,14 @@
 - name: Display the current version of the requests package
   debug:
     msg: "Current version of requests: {{ requests_version.stdout }}"
+
+- name: Print the location of the requests package
+  command: pip show requests | grep Location
+  register: requests_location
+
+- name: Display the location of the requests package
+  debug:
+    msg: "Location of requests package: {{ requests_location.stdout }}"
   
 - name: Gather facts about the host
   setup:
