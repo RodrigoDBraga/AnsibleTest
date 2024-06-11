@@ -1,9 +1,9 @@
 ---
 - name: Ensure Docker service is running new
   shell: docker ps
-    ignore_errors: yes
+  #ignore_errors: yes
   register: docker_running
-    changed_when: false
+  #changed_when: false
 
 - name: Ensure Docker service is running
   service:
