@@ -1,25 +1,14 @@
 ---
-- name: Ensure Docker service is running new
-  shell: docker ps
-  #ignore_errors: yes
-  register: docker_running
-  #changed_when: false
-
-- name: Ensure Docker service is running
-  service:
-    name: docker
-    state: started
-    enabled: yes
-  become: yes
-
 - name: Clone monitoring repository
   git:
     #repo: "https://github.com/iprolepsis-project-eu/monitoring.git"
     repo: "https://github.com/RodrigoDBraga/AnsibleTest"
     dest: /opt/monitoring
+#if the above cloning works the scp before this, in the jenkinsfile, is unecessary
 
 - name: Start monitoring services
-  shell: docker-compose -f/opt/monitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
+  shell: docker-compose -f/home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
+  #shell: docker-compose -f/opt/monitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
   become: yes
 
 - name: Print Monitoring Service Start Success
@@ -56,3 +45,18 @@
 #- name: Print Docker Compose output
 #  debug:
 #    var: docker_compose_output
+
+
+# these were the first 2 tasks done before
+#- name: Ensure Docker service is running new
+#  shell: docker ps
+#  #ignore_errors: yes
+#  register: docker_running
+  #changed_when: false
+
+#- name: Ensure Docker service is running
+#  service:
+#    name: docker
+#    state: started
+#    enabled: yes
+#  become: yes
