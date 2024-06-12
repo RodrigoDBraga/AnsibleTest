@@ -198,11 +198,11 @@ pipeline {
                         sshagent([hostname]) { // Use hostname for agent forwarding 
                             // SSH Commands using agent forwarding:
                             //echo "Adding SSH key for ip..."
-                            sh "echo 'Adding SSH key for ${ip}...'"
+                            //sh "echo 'Adding SSH key for ${ip}...'"
                             sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
-                            echo "Cleaning up remote directory on ${ip}..."
+                            //echo "Cleaning up remote directory on ${ip}..."
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
-                            echo "Copying files to ${ip}... Reminder that we should remove this eventually and just use the git on the playbook"
+                            //echo "Copying files to ${ip}... Reminder that we should remove this eventually and just use the git on the playbook"
                             sh """
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
@@ -212,14 +212,14 @@ pipeline {
                                 mv /tmp/.git ${workspacePath}/
                                  
                             """
-                            echo "Running ansible palybook on ${ip}..."
+                            //echo "Running ansible palybook on ${ip}..."
                             // need to correct the sh declartion below(too manhy """""")
                             sh """
 
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
                             
                             """
-                            echo "Ansible playbook completed for ${ip}." // Debug: Playbook completion
+                            //echo "Ansible playbook completed for ${ip}." // Debug: Playbook completion
                             
                         }
                     }
