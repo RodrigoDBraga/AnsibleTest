@@ -157,7 +157,7 @@ pipeline {
         */
         
     
-         stage('Discover Running Nodes') {
+        stage('Discover Running Nodes') {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
