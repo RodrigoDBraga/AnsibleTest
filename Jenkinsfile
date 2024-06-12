@@ -214,15 +214,12 @@ pipeline {
                             echo "Running ansible palybook on ${ip}..."
                             // need to correct the sh declartion below(too manhy """""")
                             sh """
-                            
+
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
                             
                             """
                             echo "Ansible playbook completed for ${ip}." // Debug: Playbook completion
-                            } catch (err) {
-                                echo "Error during SSH/Ansible execution for ${hostname}: ${err.getMessage()}" // Debug: Error handling
-                                throw err // Re-throw the error to stop the pipeline
-                            }
+                            
                         }
                     }
                 }
