@@ -210,16 +210,9 @@ pipeline {
                                 mv ${workspacePath}/.git /tmp/.git
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
-                                 
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"'
                             """
-                            //echo "Running ansible palybook on ${ip}..."
-                            // need to correct the sh declartion below(too manhy """""")
-                            sh """
-
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
-                            
-                            """
-                            //echo "Ansible playbook completed for ${ip}." // Debug: Playbook completion
+                        
                             
                         }
                     }
