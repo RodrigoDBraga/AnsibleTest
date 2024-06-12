@@ -193,7 +193,7 @@ pipeline {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
-
+                    echo "correctly started run ansible playbook"
                     runningNodes.each { hostname, ip ->
                         sshagent([hostname]) { // Use hostname for agent forwarding 
                             // SSH Commands using agent forwarding:
