@@ -197,8 +197,11 @@ pipeline {
                     runningNodes.each { hostname, ip ->
                         sshagent([hostname]) { // Use hostname for agent forwarding 
                             // SSH Commands using agent forwarding:
+                            echo "Adding SSH key for ${ip}..."
                             sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
+                            echo "Cleaning up remote directory on ${ip}..."
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
+                            echo "Copying files to ${ip}... Reminder that we should remove this eventually and just use the git on the playbook"
                             sh """
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
@@ -206,9 +209,20 @@ pipeline {
                                 mv ${workspacePath}/.git /tmp/.git
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
+                                 
                             """
-
+                            echo "Running ansible palybook on ${ip}..."
+                            // need to correct the sh declartion below(too manhy """""")
+                            sh """
+                            
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
+                            
+                            """
+                            echo "Ansible playbook completed for ${ip}." // Debug: Playbook completion
+                            } catch (err) {
+                                echo "Error during SSH/Ansible execution for ${hostname}: ${err.getMessage()}" // Debug: Error handling
+                                throw err // Re-throw the error to stop the pipeline
+                            }
                         }
                     }
                 }
