@@ -197,7 +197,8 @@ pipeline {
                     runningNodes.each { hostname, ip ->
                         sshagent([hostname]) { // Use hostname for agent forwarding 
                             // SSH Commands using agent forwarding:
-                            echo "Adding SSH key for ip..."
+                            //echo "Adding SSH key for ip..."
+                            sh "echo 'Adding SSH key for ${ip}...'"
                             sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
                             echo "Cleaning up remote directory on ${ip}..."
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
