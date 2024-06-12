@@ -79,45 +79,7 @@ pipeline {
             }
         }
         */
-        stage('Discover Running Nodes') {
-            steps {
-                script {
-                    workspacePath = env.WORKSPACE
-                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-                    // Initialize inventory file
-                    sh "echo '[Monitoring]' > ${INVENTORY_FILE}"
-                    sh "echo '1'"
-                    sh "echo ${INVENTORY_FILE}"
-                    sh "whoami"
-                    // Get all nodes and their IPs
-                    def nodes = jenkins.model.Jenkins.instance.nodes
-                    def runningNodes = []
-
-                    for (node in nodes) {
-                        def computer = node.toComputer()
-                        if (computer != null && computer.isOnline()) {
-                            def nodeName = node.getNodeName()
-                            def ip = computer.hostName
-                            runningNodes.add(ip)
-                            echo "Running Node: ${nodeName} with IP: ${ip}"
-                        }
-                    }
-                    nodes = 0
-                    echo "${runningNodes}"
-                    // Write IPs to the inventory file
-                    for (ip in runningNodes) {
-                        sh "echo '${ip}' >> ${INVENTORY_FILE}"
-                    }
-
-                    sh "echo '6'"
-
-                    // Print the discovered nodes
-                    echo "Discovered Running Nodes: ${runningNodes.join(', ')}"
-
-                    
-                }
-            }
-        }
+        
 
 
         /*
@@ -194,23 +156,47 @@ pipeline {
         }
         */
         
-        
+        stage('Discover Running Nodes') {
+            steps {
+                script {
+                    workspacePath = env.WORKSPACE
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+
+                    // Use a Map to store hostnames and IPs
+                    def runningNodes = [:] 
+
+                    // Collect Node Information
+                    for (node in jenkins.model.Jenkins.instance.nodes) {
+                        def computer = node.toComputer()
+                        if (computer != null && computer.isOnline()) {
+                            def nodeName = node.getNodeName()
+                            def ip = computer.hostName
+                            runningNodes[nodeName] = ip // Store both hostname and IP
+                            echo "Running Node: ${nodeName} with IP: ${ip}"
+                        }
+                    }
+
+                    // Write to Inventory File (optional, if you still need it)
+                    writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
+                    runningNodes.each { hostname, ip ->
+                        writeFile file: INVENTORY_FILE, text: "${ip} ansible_host=${hostname}\n", append: true 
+                    }
+
+                    // Print Discovered Nodes
+                    echo "Discovered Running Nodes: ${runningNodes}"
+                }
+            }
+        }
+
         stage('Run Ansible Playbook') {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
-        
-                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
 
-                    def inventory = readFile("${INVENTORY_FILE}")
-                    echo "Inventory File:\n${inventory}"
-                    //ssh-add ~/.ssh/id_rsa
-                    //def runningNodes = inventory.split('\n').findAll { it }
-                    def runningNodes = inventory.split('\n').findAll { it && !it.startsWith('[') }
-                    runningNodes.each { ip ->
-                        //sshagent(['vm1']) {
-                        sshagent([ip]) {
-                            sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts"
+                    runningNodes.each { hostname, ip ->
+                        sshagent([hostname]) { // Use hostname for agent forwarding 
+                            // SSH Commands using agent forwarding:
+                            sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
                             sh """
                                 if [ -d "tmp/.git" ]; then
@@ -221,26 +207,13 @@ pipeline {
                                 mv /tmp/.git ${workspacePath}/
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"' 
                             """
-                            /*
-                            sh """
-                                #####################this is what you had previously ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i /home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini';
-                                rsync -avz -e 'ssh -o StrictHostKeyChecking=no' ${workspacePath}/ jenkins@${ip}:/home/jenkins/iProlepsisMonitoring/ ## this might be an alternative to scp
-                                echo '${ip}'
-                                ssh-agent sh -c ' ## note that i removed this earlier
-                                echo 'after the ssh-agent'
-                                ssh-add ${SSH_KEY}; ## also removed this
-                                echo 'after the ssh-add'
-                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring;
-                                echo 'after the s copy'
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} \
-                                'ansible-playbook home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i home/jenkins/iProlepsisMonitoring/playbooks/inventory.ini' # also changd this and removed the echoes
-                                echo 'after the ansible-play'
-                            """*/
+
                         }
                     }
                 }
             }
-        }
+        } 
+        
 
         /* YOU DO NEED THIS ACTUALLY SO DON'T DELETE IT
         stage('Install Ansible') {
