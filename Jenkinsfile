@@ -208,7 +208,8 @@ pipeline {
                     //def runningNodes = inventory.split('\n').findAll { it }
                     def runningNodes = inventory.split('\n').findAll { it && !it.startsWith('[') }
                     runningNodes.each { ip ->
-                        sshagent(['vm1']) {
+                        //sshagent(['vm1']) {
+                        sshagent([ip]) {
                             sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts"
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
                             sh """
