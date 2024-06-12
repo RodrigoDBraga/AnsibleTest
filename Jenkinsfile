@@ -185,6 +185,8 @@ pipeline {
 
                     // Print Discovered Nodes
                     echo "Discovered Running Nodes: ${runningNodes}"
+                    // Store runningNodes in the global environment for later use
+                    env.runningNodes = runningNodes
                 }
             }
         }
@@ -194,7 +196,7 @@ pipeline {
                 script {
                     workspacePath = env.WORKSPACE
                     echo "correctly started run ansible playbook"
-                    runningNodes.each { hostname, ip ->
+                    env.runningNodes.each { hostname, ip ->
                         sshagent([hostname]) { // Use hostname for agent forwarding 
                             // SSH Commands using agent forwarding:
                             //echo "Adding SSH key for ip..."
