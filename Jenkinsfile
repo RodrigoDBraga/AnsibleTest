@@ -179,7 +179,8 @@ pipeline {
                     // Write to Inventory File (optional, if you still need it)
                     writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
                     runningNodes.each { hostname, ip ->
-                        writeFile file: INVENTORY_FILE, text: "${ip} ansible_host=${hostname}\n", append: true 
+                        //writeFile file: INVENTORY_FILE, text: "${ip} ansible_host=${hostname}\n", append: true 
+                        sh "echo '${ip} ansible_host=${hostname}' >> ${INVENTORY_FILE}" 
                     }
 
                     // Print Discovered Nodes
