@@ -156,7 +156,8 @@ pipeline {
         }
         */
         
-        stage('Discover Running Nodes') {
+    
+         stage('Discover Running Nodes') {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
@@ -169,10 +170,10 @@ pipeline {
                     for (node in jenkins.model.Jenkins.instance.nodes) {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
-                            def nodeName = node.getNodeName()
-                            def ip = computer.hostName
-                            runningNodes[nodeName] = ip // Store both hostname and IP
-                            echo "Running Node: ${nodeName} with IP: ${ip}"
+                        def nodeName = node.getNodeName()
+                        def ip = computer.hostName
+                        runningNodes[nodeName] = ip // Store both hostname and IP
+                        echo "Running Node: ${nodeName} with IP: ${ip}"
                         }
                     }
 
@@ -185,11 +186,12 @@ pipeline {
 
                     // Print Discovered Nodes
                     echo "Discovered Running Nodes: ${runningNodes}"
-                    // Store runningNodes in the global environment for later use
-                    env.runningNodes = runningNodes
-                }
-            }
-        }
+
+                    // Store runningNodes in the global environment as a list of maps
+                    env.runningNodes = runningNodes.collect { hostname, ip -> [hostname: hostname, ip: ip] } 
+                    }
+      }
+    }
 
         stage('Run Ansible Playbook') {
             steps {
