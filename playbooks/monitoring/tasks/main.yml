@@ -31,7 +31,7 @@
 #if the above cloning works the scp before this, in the jenkinsfile, is unecessary
 
 - name: Start monitoring services
-  shell: docker-compose /home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up 
+  shell: docker compose -f/home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
   #shell: docker-compose -f/opt/monitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
   #become: yess
 
