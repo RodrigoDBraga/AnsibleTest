@@ -197,16 +197,27 @@ pipeline {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
                     echo "correctly started run ansible playbook"
-                    env.runningNodes.each { hostname, ip ->
-                        sshagent([hostname]) { // Use hostname for agent forwarding 
-                            // SSH Commands using agent forwarding:
-                            //echo "Adding SSH key for ip..."
-                            //sh "echo 'Adding SSH key for ${ip}...'"
+
+                    def runningNodes = []
+                    def inventory = readFile("${INVENTORY_FILE}")
+
+                    inventory.split('\n').each { line ->
+                        if (line && !line.startsWith('[')) {
+                            def (ip, hostPart) = line.tokenize() // Split by space
+                            def hostname = hostPart.split('=')[1] // Extract hostname
+                            runningNodes.add([hostname: hostname, ip: ip])
+                        }
+                    }
+
+                    echo "Running Nodes (from inventory): ${runningNodes}"
+
+                    runningNodes.each { node ->
+                        sshagent([node.hostname]) {
+                     // Use hostname for agent forwarding 
                             sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
-                            //echo "Cleaning up remote directory on ${ip}..."
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
-                            //echo "Copying files to ${ip}... Reminder that we should remove this eventually and just use the git on the playbook"
                             sh """
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
@@ -216,8 +227,6 @@ pipeline {
                                 mv /tmp/.git ${workspacePath}/
                                 ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"'
                             """
-                        
-                            
                         }
                     }
                 }
