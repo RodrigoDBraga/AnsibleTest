@@ -5,9 +5,9 @@
 - name: Replace server_ip in configuration
     replace:
       path: /home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/otel-collector-config.yaml
-    regexp: '{{ server_ip }}'
-    replace: '{{ ansible_host }}'
-      delegate_to: localhost
+      regexp: '{{ server_ip }}'
+      replace: '{{ ansible_host }}'
+    delegate_to: localhost
 
 - name: Print the IP address of the current machine
   debug:
