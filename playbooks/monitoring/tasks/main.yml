@@ -1,22 +1,13 @@
 ---
-- name: Print the current version of the requests package
-  command: pip show requests | grep Version
-  register: requests_version
-
-- name: Display the current version of the requests package
-  debug:
-    msg: "Current version of requests: {{ requests_version.stdout }}"
-
-- name: Print the location of the requests package
-  command: pip show requests | grep Location
-  register: requests_location
-
-- name: Display the location of the requests package
-  debug:
-    msg: "Location of requests package: {{ requests_location.stdout }}"
-  
 - name: Gather facts about the host
   setup:
+
+- name: Replace server_ip in configuration
+      replace:
+        path: /home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/otel-collector-config.yaml
+        regexp: '{{ server_ip }}'
+        replace: '{{ ansible_host }}'
+      delegate_to: localhost
 
 - name: Print the IP address of the current machine
   debug:
