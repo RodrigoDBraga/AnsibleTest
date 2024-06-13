@@ -215,17 +215,16 @@ pipeline {
 
                     runningNodes.each { node ->
                         sshagent([node.hostname]) {
-
-                            //sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
-                            //sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
+                            sh "ssh-keyscan -H ${node.ip} >> /var/jenkins_home/.ssh/known_hosts" 
+                            sh "ssh -o StrictHostKeyChecking=no jenkins@${node.ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
                             sh """
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
                                 fi
                                 mv ${workspacePath}/.git /tmp/.git
-                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  
+                                scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${node.ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost," -vvv'
+                                ssh -o StrictHostKeyChecking=no jenkins@${node.ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost," -vvv'
                             """
                         }
                     }
