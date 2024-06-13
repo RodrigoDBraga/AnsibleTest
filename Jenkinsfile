@@ -215,7 +215,6 @@ pipeline {
 
                     runningNodes.each { node ->
                         sshagent([node.hostname]) {
-                     // Use hostname for agent forwarding 
                             sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
                             sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
                             sh """
@@ -225,7 +224,7 @@ pipeline {
                                 mv ${workspacePath}/.git /tmp/.git
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
-                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost,"'
+                                ssh -o StrictHostKeyChecking=no jenkins@${ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost," -vvv'
                             """
                         }
                     }
