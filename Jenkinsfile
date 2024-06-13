@@ -215,8 +215,9 @@ pipeline {
 
                     runningNodes.each { node ->
                         sshagent([node.hostname]) {
-                            sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
-                            sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
+
+                            //sh "ssh-keyscan -H ${ip} >> /var/jenkins_home/.ssh/known_hosts" 
+                            //sh "ssh -o StrictHostKeyChecking=no jenkins@${ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
                             sh """
                                 if [ -d "tmp/.git" ]; then
                                     rm -rf "tmp/.git"
