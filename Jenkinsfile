@@ -243,67 +243,7 @@ pipeline {
             }
         }*/
         
-        /*
-        stage('Container Setup') {
-            steps {
-                script {
-                    if (env.CREATE_TEST_CONTAINER == 'true') {
-                        // Create a test Ubuntu container
-                        sh """
-                            docker run -d -it --name ubuntu-test-container \
-                                -v /var/run/docker.sock:/var/run/docker.sock \
-                                ubuntu:latest /bin/bash
-                        """
-                        // Get the IP of the newly created container
-                        env.TARGET_CONTAINER_IP = sh(returnStdout: true, script: "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ubuntu-test-container").trim()
-                    } else {
-                        // Discover existing client container IPs
-                        def clientContainerIPs = sh(returnStdout: true, script: """
-                            docker ps -aq --filter "${env.CLIENT_CONTAINER_FILTER}" | xargs -I {} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}
-                        """).trim().split("\n").findAll { it.trim() != "" }
-
-                        if (clientContainerIPs.isEmpty()) {
-                            error("No client containers found with filter: ${env.CLIENT_CONTAINER_FILTER}")
-                        } else {
-                            env.TARGET_CONTAINER_IP = clientContainerIPs[0] // Use the first IP found
-                            echo "Discovered client container IPs: ${clientContainerIPs.join(', ')}"
-                        }
-                    }
-                }
-            }
-        }*/
-        
-        /*
-        stage('Update Ansible Inventory') {
-            steps {
-                script {
-                    def containerIps = env.TARGET_CONTAINER_IPS.split('\n').collect { it.trim() }.findAll { it != "" }
-                    def inventoryContent = "[Monitoring]\n"
-                    for (ip in containerIps) {
-                        inventoryContent += "${ip} ansible_user=${env.ANSIBLE_USER}\n"
-                    }
-                    writeFile file: 'ansible/inventory.ini', text: inventoryContent
-                    sh "cat ansible/inventory.ini" // Optional: Print the inventory file
-                }
-            }
-        }*/
-
-        /*
-        stage('Get Docker Container IPs') {
-            steps {
-                script {
-                    def containerIps = sh(script: '''
-                        docker ps -q | xargs -I {} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}
-                    ''', returnStdout: true).trim().split('\n')
-                    def inventoryContent = '[Monitoring]\n'
-                    for (ip in containerIps) {
-                        inventoryContent += "${ip} ansible_user=root\n"
-                    }
-                    writeFile file: 'ansible/inventory.ini', text: inventoryContent
-                }
-            }
-        }*/
-
+      
 
         stage('Run Ansible Playbook - old') {
             steps {

@@ -50,16 +50,26 @@ services:
     restart: always
     privileged: true
 
-
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: main_otel_collector
-    #command: ["/bin/bash", "./entrypoint.sh"]
-    #command: ["--config=/etc/otel-collector-config.yaml", "--exec", "sh", "-c", "ls -l /etc/otel-collector-config.yaml; sleep 60"]
-    #command: ["--config=/etc/otel-collector-config.yaml"] # command: ["--config=./configs/otel-collector-config.yaml"]
+    command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
        - ./configs/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
       - "13133:13133" # health_check extension
       - "4317:4317" # OTLP receiver
     restart: unless-stopped
+
+ # otel-collector:
+ #   image: otel/opentelemetry-collector-contrib:latest
+ #   container_name: main_otel_collector
+    #command: ["/bin/bash", "./entrypoint.sh"]
+    #command: ["--config=/etc/otel-collector-config.yaml", "--exec", "sh", "-c", "ls -l /etc/otel-collector-config.yaml; sleep 60"]
+#    command: ["--config=/etc/otel-collector-config.yaml"] # command: ["--config=./configs/otel-collector-config.yaml"]
+#    volumes:
+#       - ./configs/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+#    ports:
+#      - "13133:13133" # health_check extension
+#      - "4317:4317" # OTLP receiver
+#    restart: unless-stopped
