@@ -224,7 +224,7 @@ pipeline {
                                 mv ${workspacePath}/.git /tmp/.git
                                 scp -o StrictHostKeyChecking=no -r ${workspacePath} jenkins@${node.ip}:/home/jenkins/iProlepsisMonitoring  
                                 mv /tmp/.git ${workspacePath}/
-                                ssh -o StrictHostKeyChecking=no jenkins@${node.ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost," -vvv'
+                                ssh -o StrictHostKeyChecking=no jenkins@${node.ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost," -e server_ip=${node.ip} -vvv'
                             """
                         }
                     }
