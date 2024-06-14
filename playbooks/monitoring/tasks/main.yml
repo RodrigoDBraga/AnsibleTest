@@ -23,7 +23,7 @@
 
 - name: Start monitoring services
   #shell: docker compose -f/home/jenkins/iProlepsisMonitoring/client/docker-compose-client-monitor.yml up -d
-  shell: docker compose -f/home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
+  shell: docker compose -f/../files/docker-compose-client-monitor.yml up -d
   #shell: docker-compose -f/opt/monitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
   become: yes
 
@@ -31,44 +31,10 @@
   debug:
     msg: "Monitoring services started successfully."
 
-#- name: Create environment file for Docker Compose
-#  copy:
-#    content: |
- #     SERVER_IP={{ server_ip }}
-#      SERVER_NAME={{ server_name }}
-  #  dest: /opt/monitoring/.env
-   # owner: root
-   # group: root
-   # mode: '0644'
-
-#- name: Start monitoring services with Docker Compose
-#  command: docker-compose up -d
-#  args:
-#    chdir: /opt/monitoring
-
-
 
 #- name: Display Docker Compose configuration
 #  command: cat /opt/monitoring/docker-compose.yml
 
-#- name: Start monitoring services with Docker Compose
-  #command: docker-compose up #--verbose
- # args:
-#    chdir: /opt/monitoring
-  #register: docker_compose_output
-#  ignore_errors: yes
-
-#- name: Print Docker Compose output
-#  debug:
-#    var: docker_compose_output
-
-
-# these were the first 2 tasks done before
-#- name: Ensure Docker service is running new
-#  shell: docker ps
-#  #ignore_errors: yes
-#  register: docker_running
-  #changed_when: false
 
 #- name: Ensure Docker service is running
 #  service:
