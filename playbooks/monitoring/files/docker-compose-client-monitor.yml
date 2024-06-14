@@ -54,7 +54,13 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: main_otel_collector
-    command: ["--config=/etc/otel-collector-config.yaml"] # command: ["--config=./configs/otel-collector-config.yaml"]
+    command: > # Use > for multi-line commands
+      ["--config=/etc/otel-collector-config.yaml"]
+      sh -c '
+        ls -l /etc/otel-collector-config.yaml; # Check what's mounted
+        sleep 60 # Keep the container running for inspection
+      '
+    #command: ["--config=/etc/otel-collector-config.yaml"] # command: ["--config=./configs/otel-collector-config.yaml"]
     volumes:
        - ./configs/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
