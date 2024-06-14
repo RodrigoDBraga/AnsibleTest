@@ -54,7 +54,7 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: main_otel_collector
-    command: ["--config=/etc/otel-collector-config.yaml"]
+    command: ["--config=/etc/otel-collector-config.yaml"] # command: ["--config=./configs/otel-collector-config.yaml"]
     volumes:
        - ./configs/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
