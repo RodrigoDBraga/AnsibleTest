@@ -40,7 +40,7 @@ pipeline {
                     echo "Discovered Running Nodes: ${runningNodes}"
                 }
             }
-        }
+        }  
        //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
         /*
         stage('Discover Running Nodes') {
