@@ -24,6 +24,9 @@ pipeline {
                         def nodeName = node.getNodeName()
                         def ip = computer.hostName
                         runningNodes[nodeName] = ip // Store both hostname and IP
+                        def ipAddress = getNodeIPAddress(computer) //delete this
+                        runningNodes[nodeName] = ipAddress //delete this
+                        echo "Running Nodes: ${runningNodes}"
                         echo "Running Node: ${nodeName} with IP: ${ip}"
                         }
                     }
