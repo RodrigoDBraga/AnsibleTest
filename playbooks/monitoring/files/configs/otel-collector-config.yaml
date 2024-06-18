@@ -21,7 +21,7 @@ extensions:
 
 exporters:
   otlp:
-    endpoint: http://5.75.190.25:4317
+    endpoint: http://85.244.246.174:4317 #http://5.75.190.25:4317
     tls:
       insecure: true
 
