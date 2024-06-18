@@ -22,14 +22,12 @@ pipeline {
                             def nodeName = node.getNodeName()
                             def dockerIP = computer.hostName
 
-                            // Run a command on the node to get the actual IP address
-                            def actualIP = computer.getChannel().call {
-                                // Command to get the actual IP address of the node
-                                "hostname -I | awk '{print \$1}'".execute().text.trim()
+                            // Execute a command on the node to get the actual IP address
+                            node(nodeName) {
+                                def actualIP = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim()
+                                runningNodes[nodeName] = actualIP
+                                echo "Running Node: ${nodeName} with IP: ${actualIP}"
                             }
-
-                            runningNodes[nodeName] = actualIP
-                            echo "Running Node: ${nodeName} with IP: ${actualIP}"
                         }
                     }
 
