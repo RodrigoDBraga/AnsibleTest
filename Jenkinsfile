@@ -6,8 +6,45 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
+
+        stage('Discover Running Nodes') {
+            steps {
+                script {
+                    workspacePath = env.WORKSPACE
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+
+                    def runningNodes = [:]
+
+                    // Collect Node Information
+                    for (node in jenkins.model.Jenkins.instance.nodes) {
+                        def computer = node.toComputer()
+                        if (computer != null && computer.isOnline()) {
+                            def nodeName = node.getNodeName()
+                            def dockerIP = computer.hostName
+
+                            // Run a command on the node to get the actual IP address
+                            def actualIP = computer.getChannel().call {
+                                // Command to get the actual IP address of the node
+                                "hostname -I | awk '{print \$1}'".execute().text.trim()
+                            }
+
+                            runningNodes[nodeName] = actualIP
+                            echo "Running Node: ${nodeName} with IP: ${actualIP}"
+                        }
+                    }
+
+                    // Write to Inventory File (optional, if you still need it)
+                    writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
+                    runningNodes.each { hostname, ip ->
+                        sh "echo '${ip} ansible_host=${hostname}' >> ${INVENTORY_FILE}"
+                    }
+
+                    echo "Discovered Running Nodes: ${runningNodes}"
+                }
+            }
+        }
        //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
-    
+        /*
         stage('Discover Running Nodes') {
             steps {
                 script {
@@ -40,7 +77,29 @@ pipeline {
                     //env.runningNodes = runningNodes.collect { hostname, ip -> [hostname: hostname, ip: ip] } 
                     }
       }
-    }
+    }*/
+        /*
+        stage('Get Connected Node SSH Info') {
+            steps {
+                script {
+                    def jenkins = Jenkins.getInstance()
+                    def computerSet = jenkins.getComputers()
+
+                    for (computer in computerSet) {
+                        if (computer instanceof SlaveComputer && computer.isOnline()) { // Only connected slaves
+                            def slaveComputer = computer as SlaveComputer
+                            def channel = slaveComputer.getChannel()
+                            if (channel != null) {
+                                def remoteAddress = channel.getRemoteAddress()
+                                def host = remoteAddress.getHostName()
+                                def ip = InetAddress.getByName(host).getHostAddress() // Resolve hostname to IP
+
+                                echo "Node: ${computer.getName()}, Host: ${host}, SSH IP: ${ip}"
+                            } 
+                        } 
+                    }
+                }
+            }*/
 
         stage('Run Ansible Playbook') {
             steps {
