@@ -10,9 +10,9 @@
     replace: '{{ ansible_host }}'
   delegate_to: localhost
 
-- name: Print the IP address of the current machine
-  debug:
-    msg: "Current IP address: {{ ansible_default_ipv4.address }}"
+#- name: Print the IP address of the current machine
+#  debug:
+#    msg: "Current IP address: {{ ansible_default_ipv4.address }}"
 
 
 #- name: Clone monitoring repository
