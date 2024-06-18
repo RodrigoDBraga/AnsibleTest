@@ -26,7 +26,9 @@ pipeline {
                         //def ip = computer.hostName
                         //def ip = sh(script: 'ip addr show eth0 | grep "inet " | awk \'{print $2}\' | cut -d/ -f1', returnStdout: true).trim() 
                         runningNodes[nodeName] = '64.226.69.178' //ip // Store both hostname and IP
+                        def ip = '64.226.69.178'
                         echo "Running Nodes: ${runningNodes}"
+                        
                         echo "Running Node: ${nodeName} with IP: ${ip}"
                         }
                     }
