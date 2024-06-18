@@ -6,7 +6,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
             }
         }
-
+        /*
         stage('Discover Running Nodes') {
             steps {
                 script {
@@ -40,9 +40,9 @@ pipeline {
                     echo "Discovered Running Nodes: ${runningNodes}"
                 }
             }
-        }
+        }*/
        //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
-        /*
+        
         stage('Discover Running Nodes') {
             steps {
                 script {
@@ -52,14 +52,20 @@ pipeline {
                     // Use a Map to store hostnames and IPs
                     def runningNodes = [:] 
 
-                    // Collect Node Information
                     for (node in jenkins.model.Jenkins.instance.nodes) {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
-                        def nodeName = node.getNodeName()
-                        def ip = computer.hostName
-                        runningNodes[nodeName] = ip // Store both hostname and IP
-                        echo "Running Node: ${nodeName} with IP: ${ip}"
+                            def nodeName = node.getNodeName()
+
+                            // Execute the hostname command on the node and capture the output
+                            def ip = ""
+                            nodeName = nodeName ?: "master"  // If nodeName is null, it refers to the master node
+                            node(nodeName) {
+                                ip = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim()
+                            }
+
+                            runningNodes[nodeName] = ip // Store both hostname and IP
+                            echo "Running Node: ${nodeName} with IP: ${ip}"
                         }
                     }
 
@@ -75,7 +81,7 @@ pipeline {
                     //env.runningNodes = runningNodes.collect { hostname, ip -> [hostname: hostname, ip: ip] } 
                     }
       }
-    }*/
+    }
         /*
         stage('Get Connected Node SSH Info') {
             steps {
