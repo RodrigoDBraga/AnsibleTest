@@ -22,7 +22,7 @@ pipeline {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
                         def nodeName = node.getNodeName()
-                        def ip = node.hostName
+                        def ip = computer.hostName
                         //def ip = computer.hostName
                         //def ip = sh(script: 'ip addr show eth0 | grep "inet " | awk \'{print $2}\' | cut -d/ -f1', returnStdout: true).trim() 
                         runningNodes[nodeName] = ip // Store both hostname and IP
