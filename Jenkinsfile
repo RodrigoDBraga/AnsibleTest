@@ -19,24 +19,27 @@ pipeline {
                     // Create the inventory file with the header
                     writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
                     
-                    // Use Jenkins API to get nodes safely
+                    // Use Jenkins API to get nodes safely, excluding the master
                     jenkins.model.Jenkins.instance.computers.each { computer ->
-                        def nodeName = computer.name ?: 'master'
+                        def nodeName = computer.name
                         
-                        if (computer.online) {
-                            def ipAddresses = computer.getChannel()?.call(new hudson.model.Computer.ListPossibleNames())
-                            if (ipAddresses) {
-                                def lastIP = ipAddresses.last()
-                                nodeIpMap[nodeName] = lastIP
-                                echo "Node: ${nodeName}, Last IP: ${lastIP}"
-                                
-                                // Append to the inventory file
-                                sh "echo '${lastIP} ansible_host=${nodeName}' >> ${INVENTORY_FILE}"
+                        // Skip the master node
+                        if (nodeName && nodeName != "master") {
+                            if (computer.online) {
+                                def ipAddresses = computer.getChannel()?.call(new hudson.model.Computer.ListPossibleNames())
+                                if (ipAddresses) {
+                                    def lastIP = ipAddresses.last()
+                                    nodeIpMap[nodeName] = lastIP
+                                    echo "Node: ${nodeName}, Last IP: ${lastIP}"
+                                    
+                                    // Append to the inventory file
+                                    sh "echo '${lastIP} ansible_host=${nodeName}' >> ${INVENTORY_FILE}"
+                                } else {
+                                    echo "No IP addresses found for node: ${nodeName}"
+                                }
                             } else {
-                                echo "No IP addresses found for node: ${nodeName}"
+                                echo "Node '${nodeName}' is offline or not accessible"
                             }
-                        } else {
-                            echo "Node '${nodeName}' is offline or not accessible"
                         }
                     }
                     
