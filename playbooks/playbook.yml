@@ -19,7 +19,7 @@
       when: docker_check.rc != 0
 
     - name: Check if Docker Compose is installed
-      command: docker-compose --version
+      command: docker compose --version
       register: compose_check
       ignore_errors: yes
 
