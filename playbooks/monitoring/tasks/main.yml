@@ -26,10 +26,12 @@
     regexp: 'server_ip_swap'
     replace: '{{ server_ip }}'
 
-- name: Check Docker installation
-  command: which docker
-  register: docker_path
-  ignore_errors: yes
-
 - name: Start monitoring services
-  command: "{{ docker_path.stdout }} compose -f {{ remote_dir }}/playbooks/monitoring
+  shell: "/usr/bin/docker compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d"
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin:/bin"
+
+- name: Print Monitoring Service Start Success
+  debug:
+    msg: "Monitoring services started successfully."
