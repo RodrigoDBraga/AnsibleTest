@@ -51,45 +51,7 @@ pipeline {
                 }
             }
         }
-        /*
-        stage('Discover Running Nodes') {
-            steps {
-                script {
-                    workspacePath = env.WORKSPACE
-                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-
-                    // Use a Map to store hostnames and IPs
-                    def runningNodes = [:] 
-
-                    // Collect Node Information
-                    for (node in jenkins.model.Jenkins.instance.nodes) {
-                        def computer = node.toComputer()
-                        if (computer != null && computer.isOnline()) {
-                        def nodeName = node.getNodeName()
-                        def ip = computer.hostName
-                        //def ip = computer.hostName
-                        //def ip = sh(script: 'ip addr show eth0 | grep "inet " | awk \'{print $2}\' | cut -d/ -f1', returnStdout: true).trim() 
-                        runningNodes[nodeName] = '64.226.69.178' //ip // Store both hostname and IP
-                        def ip = '64.226.69.178'
-                        echo "Running Nodes: ${runningNodes}"
-                        
-                        echo "Running Node: ${nodeName} with IP: ${ip}"
-                        }
-                    }
-
-                    // Write to Inventory File (optional, if you still need it)
-                    writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
-                    runningNodes.each { hostname, ip ->
-                        //writeFile file: INVENTORY_FILE, text: "${ip} ansible_host=${hostname}\n", append: true 
-                        sh "echo '${ip} ansible_host=${hostname}' >> ${INVENTORY_FILE}" 
-                    }
-
-                    
-                    echo "Discovered Running Nodes: ${runningNodes}"
-                    //env.runningNodes = runningNodes.collect { hostname, ip -> [hostname: hostname, ip: ip] } 
-                    }
-      }
-    }*/
+        
 
         stage('Run Ansible Playbook') {
             steps {
