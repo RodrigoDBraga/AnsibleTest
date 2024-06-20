@@ -98,6 +98,17 @@ def runAnsibleOnNodes(runningNodes) {
                     mv ${WORKSPACE}/.git /tmp/.git
                     scp -o StrictHostKeyChecking=no -r ${WORKSPACE} root@${node.ip}:${params.REMOTE_DIR}  
                     mv /tmp/.git ${WORKSPACE}/
+
+                    # Install Ansible on the remote machine
+                    ssh -o StrictHostKeyChecking=no root@${node.ip} '
+                        if ! command -v ansible-playbook &> /dev/null; then
+                            apt update
+                            apt install -y software-properties-common
+                            apt-add-repository --yes --update ppa:ansible/ansible
+                            apt install -y ansible
+                        fi
+                    '
+
                     ssh -o StrictHostKeyChecking=no root@${node.ip} 'ansible-playbook ${params.REMOTE_DIR}/playbooks/playbook.yml -i "localhost," -e "server_ip=${node.ip} remote_dir=${params.REMOTE_DIR}" -vvv'
                 """
             } catch (Exception e) {
