@@ -13,21 +13,49 @@
       ignore_errors: yes
 
     - name: Install Docker if not present
-      shell: |
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sh get-docker.sh
+      block:
+        - name: Download and install Docker
+          shell: |
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
+          args:
+            warn: false
+          register: docker_install
+
+        - name: Add current user to docker group
+          user:
+            name: "{{ ansible_user }}"
+            groups: docker
+            append: yes
+
+        - name: Reload systemd
+          systemd:
+            daemon_reload: yes
+
+        - name: Restart Docker service
+          systemd:
+            name: docker
+            state: restarted
+
       when: docker_check.rc != 0
 
-    - name: Check if Docker Compose is installed
-      command: docker compose --version
+    - name: Ensure Docker service is started and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Check if Docker Compose plugin is installed
+      command: docker compose version
       register: compose_check
       ignore_errors: yes
 
-    - name: Install Docker Compose if not present
-      get_url:
-        url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
-        dest: /usr/local/bin/docker-compose
-        mode: '0755'
+    - name: Install Docker Compose plugin if not present
+      shell: |
+        DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+        mkdir -p $DOCKER_CONFIG/cli-plugins
+        curl -SL https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+        chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
       when: compose_check.rc != 0
 
     - name: Ensure monitoring directory exists
