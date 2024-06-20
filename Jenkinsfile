@@ -1,117 +1,109 @@
 pipeline {
     agent any
+    
+    parameters {
+        string(name: 'GIT_REPO', defaultValue: 'https://github.com/RodrigoDBraga/AnsibleTest', description: 'Git repository URL')
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to checkout')
+        string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
+    }
+    
+    environment {
+        INVENTORY_FILE = "${WORKSPACE}/playbooks/inventory.ini"
+    }
+    
     stages {   
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/RodrigoDBraga/AnsibleTest'
+                git branch: params.GIT_BRANCH, url: params.GIT_REPO
             }
         }
-       //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
+        
         stage('Get IP Addresses and Create Inventory') {
             steps {
                 script {
-                    def nodeIpMap = [:]
-                    
-                    // Define the inventory file path
-                    def workspacePath = env.WORKSPACE
-                    def INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-                    
-                    // Create the inventory file with the header
-                    writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
-                    
-                    // Use Jenkins API to get nodes safely, excluding the master
-                    jenkins.model.Jenkins.instance.computers.each { computer ->
-                        def nodeName = computer.name
-                        
-                        // Skip the master node
-                        if (nodeName && nodeName != "master") {
-                            if (computer.online) {
-                                def ipAddresses = computer.getChannel()?.call(new hudson.model.Computer.ListPossibleNames())
-                                if (ipAddresses) {
-                                    def lastIP = ipAddresses.last()
-                                    nodeIpMap[nodeName] = lastIP
-                                    echo "Node: ${nodeName}, Last IP: ${lastIP}"
-                                    
-                                    // Append to the inventory file
-                                    sh "echo '${lastIP} ansible_host=${nodeName}' >> ${INVENTORY_FILE}"
-                                } else {
-                                    echo "No IP addresses found for node: ${nodeName}"
-                                }
-                            } else {
-                                echo "Node '${nodeName}' is offline or not accessible"
-                            }
-                        }
-                    }
-                    
-                    // Echo discovered running nodes
-                    echo "Discovered Running Nodes: ${nodeIpMap}"
-                    
-                    // Store the map as a string representation
-                    env.NODE_IP_MAP = nodeIpMap.collect { k, v -> "$k=$v" }.join(',')
+                    createInventory()
                 }
             }
         }
         
-
         stage('Run Ansible Playbook') {
             steps {
                 script {
-                    workspacePath = env.WORKSPACE
-                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-                    def runningNodes = []
-                    def inventory = readFile("${INVENTORY_FILE}")
-
-                    inventory.split('\n').each { line ->
-                        if (line && !line.startsWith('[')) {
-                            def (ip, hostPart) = line.tokenize() 
-                            def hostname = hostPart.split('=')[1]
-                            runningNodes.add([hostname: hostname, ip: ip])
-                        }
-                    }
-
+                    def runningNodes = getRunningNodesFromInventory()
                     echo "Running Nodes (from inventory): ${runningNodes}"
-
-                    runningNodes.each { node ->
-                        sshagent([node.hostname]) {
-                            sh "ssh -o StrictHostKeyChecking=no root@${node.ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
-                            sh """
-                                if [ -d "tmp/.git" ]; then
-                                    rm -rf "tmp/.git"
-                                fi
-                                mv ${workspacePath}/.git /tmp/.git
-                                scp -o StrictHostKeyChecking=no -r ${workspacePath} root@${node.ip}:/home/jenkins/iProlepsisMonitoring  
-                                mv /tmp/.git ${workspacePath}/
-                                ssh -o StrictHostKeyChecking=no root@${node.ip} 'ansible-playbook /home/jenkins/iProlepsisMonitoring/playbooks/playbook.yml -i "localhost," -e server_ip=${node.ip} -vvv'
-                            """
-                        }
-                    }
+                    
+                    runAnsibleOnNodes(runningNodes)
                 }
             }
-        } 
-        
-
-
-
-
-
-
-
-
-
-
-        /* YOU DO NEED THIS ACTUALLY SO DON'T DELETE IT
-        stage('Install Ansible') {
-            steps {
-                sh '''
-                    sudo apt update
-                    sudo apt install -y ansible
-                '''
-            }
-        }*/
-        
-      
-
-
+        }
     }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: env.INVENTORY_FILE, allowEmptyArchive: true
+        }
+    }
+}
+
+def createInventory() {
+    def nodeIpMap = [:]
+    
+    writeFile file: env.INVENTORY_FILE, text: "[Monitoring]\n"
+    
+    jenkins.model.Jenkins.instance.computers.each { computer ->
+        def nodeName = computer.name
         
+        if (nodeName && nodeName != "master" && computer.online) {
+            def ipAddresses = computer.getChannel()?.call(new hudson.model.Computer.ListPossibleNames())
+            if (ipAddresses) {
+                def lastIP = ipAddresses.last()
+                nodeIpMap[nodeName] = lastIP
+                echo "Node: ${nodeName}, Last IP: ${lastIP}"
+                sh "echo '${lastIP} ansible_host=${nodeName}' >> ${env.INVENTORY_FILE}"
+            } else {
+                echo "No IP addresses found for node: ${nodeName}"
+            }
+        }
+    }
+    
+    echo "Discovered Running Nodes: ${nodeIpMap}"
+    env.NODE_IP_MAP = nodeIpMap.collect { k, v -> "$k=$v" }.join(',')
+}
+
+def getRunningNodesFromInventory() {
+    def runningNodes = []
+    def inventory = readFile(env.INVENTORY_FILE)
+    
+    inventory.split('\n').each { line ->
+        if (line && !line.startsWith('[')) {
+            def (ip, hostPart) = line.tokenize() 
+            def hostname = hostPart.split('=')[1]
+            runningNodes.add([hostname: hostname, ip: ip])
+        }
+    }
+    
+    return runningNodes
+}
+
+def runAnsibleOnNodes(runningNodes) {
+    runningNodes.each { node ->
+        sshagent([node.hostname]) {
+            try {
+                sh "ssh -o StrictHostKeyChecking=no root@${node.ip} 'rm -rf ${params.REMOTE_DIR}'"
+                sh """
+                    if [ -d "tmp/.git" ]; then
+                        rm -rf "tmp/.git"
+                    fi
+                    mv ${WORKSPACE}/.git /tmp/.git
+                    scp -o StrictHostKeyChecking=no -r ${WORKSPACE} root@${node.ip}:${params.REMOTE_DIR}  
+                    mv /tmp/.git ${WORKSPACE}/
+                    ssh -o StrictHostKeyChecking=no root@${node.ip} 'ansible-playbook ${params.REMOTE_DIR}/playbooks/playbook.yml -i "localhost," -e server_ip=${node.ip} -vvv'
+                """
+            } catch (Exception e) {
+                echo "Error occurred while processing node ${node.hostname}: ${e.message}"
+                // Optionally, you can throw the error to fail the build
+                // throw e
+            }
+        }
+    }
 }
