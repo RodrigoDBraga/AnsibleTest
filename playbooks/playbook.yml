@@ -2,53 +2,8 @@
 - hosts: localhost
   connection: local
   become: yes
-  gather_facts: false  # No need to gather facts on localhost
+  gather_facts: false  
   vars:
-    server_ip: "{{ node_ip }}"  # Make it global
+    server_ip: "{{ node_ip }}"  
   roles:
     - monitoring
-
-#- hosts: localhost
-#  connection: local
-#  become: yes
-#  roles:
-#    - monitoring
-
-#- hosts: all
-#  become: yes
-#  roles:
-#    - monitoring
-  
-
-#- hosts: all
-#  gather_facts: yes
-
-#  tasks:
- #   - name: Gather user information
- #     shell: |
-  #      whoami
-   #     id
-  #      sudo -l
-   #   register: user_info
-#
-   # - name: Display user information
-   #   debug:
-   #     var: user_info.stdout_lines
-
-   # - name: Update packages
-  #    apt:
-    #    name: "*"
-  #      state: latest
-    #    update_cache: yes
-     # become: yes
-
-  
-
-
-
-
-
-
-
-
-

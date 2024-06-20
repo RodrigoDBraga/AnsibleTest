@@ -7,7 +7,50 @@ pipeline {
             }
         }
        //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
-    
+        stage('Get IP Addresses and Create Inventory') {
+            steps {
+                script {
+                    workspacePath = env.WORKSPACE
+                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
+
+                    def nodeIpMap = [:]
+                    
+                    // Get all nodes including the master
+                    def allNodes = [Jenkins.instance] + Jenkins.instance.nodes
+                    
+                    // Create the inventory file with the header
+                    writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
+                    
+                    allNodes.each { node ->
+                        def nodeName = node.nodeName ?: 'master'
+                        def computer = node.toComputer()
+                        
+                        if (computer && computer.online) {
+                            def ipAddresses = computer.getChannel().call(new hudson.model.Computer.ListPossibleNames())
+                            if (ipAddresses) {
+                                def lastIP = ipAddresses.last()
+                                nodeIpMap[nodeName] = lastIP
+                                echo "Node: ${nodeName}, Last IP: ${lastIP}"
+                                
+                                // Append to the inventory file
+                                sh "echo '${lastIP} ansible_host=${nodeName}' >> ${INVENTORY_FILE}"
+                            } else {
+                                echo "No IP addresses found for node: ${nodeName}"
+                            }
+                        } else {
+                            echo "Node '${nodeName}' is offline or not accessible"
+                        }
+                    }
+                    
+                    // Echo discovered running nodes
+                    echo "Discovered Running Nodes: ${nodeIpMap}"
+                    
+                    // Store the map as a string representation
+                    env.NODE_IP_MAP = nodeIpMap.collect { k, v -> "$k=$v" }.join(',')
+                }
+            }
+        }
+        /*
         stage('Discover Running Nodes') {
             steps {
                 script {
@@ -22,7 +65,7 @@ pipeline {
                         def computer = node.toComputer()
                         if (computer != null && computer.isOnline()) {
                         def nodeName = node.getNodeName()
-                        //def ip = computer.hostName
+                        def ip = computer.hostName
                         //def ip = computer.hostName
                         //def ip = sh(script: 'ip addr show eth0 | grep "inet " | awk \'{print $2}\' | cut -d/ -f1', returnStdout: true).trim() 
                         runningNodes[nodeName] = '64.226.69.178' //ip // Store both hostname and IP
@@ -45,22 +88,20 @@ pipeline {
                     //env.runningNodes = runningNodes.collect { hostname, ip -> [hostname: hostname, ip: ip] } 
                     }
       }
-    }
+    }*/
 
         stage('Run Ansible Playbook') {
             steps {
                 script {
                     workspacePath = env.WORKSPACE
                     INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-                    //echo "correctly started run ansible playbook"
-
                     def runningNodes = []
                     def inventory = readFile("${INVENTORY_FILE}")
 
                     inventory.split('\n').each { line ->
                         if (line && !line.startsWith('[')) {
-                            def (ip, hostPart) = line.tokenize() // Split by space
-                            def hostname = hostPart.split('=')[1] // Extract hostname
+                            def (ip, hostPart) = line.tokenize() 
+                            def hostname = hostPart.split('=')[1]
                             runningNodes.add([hostname: hostname, ip: ip])
                         }
                     }
@@ -69,7 +110,6 @@ pipeline {
 
                     runningNodes.each { node ->
                         sshagent([node.hostname]) {
-                            //sh "ssh-keyscan -H ${node.ip} >> /var/jenkins_home/.ssh/known_hosts" 
                             sh "ssh -o StrictHostKeyChecking=no root@${node.ip} 'rm -rf /home/jenkins/iProlepsisMonitoring'"
                             sh """
                                 if [ -d "tmp/.git" ]; then
