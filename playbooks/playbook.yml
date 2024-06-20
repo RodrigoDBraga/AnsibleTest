@@ -2,8 +2,39 @@
 - hosts: localhost
   connection: local
   become: yes
-  gather_facts: false  
   vars:
-    server_ip: "{{ node_ip }}"  
+    server_ip: "{{ server_ip }}"
+    remote_dir: "{{ remote_dir }}"
+  
+  tasks:
+    - name: Check if Docker is installed
+      command: docker --version
+      register: docker_check
+      ignore_errors: yes
+
+    - name: Install Docker if not present
+      shell: |
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sh get-docker.sh
+      when: docker_check.rc != 0
+
+    - name: Check if Docker Compose is installed
+      command: docker-compose --version
+      register: compose_check
+      ignore_errors: yes
+
+    - name: Install Docker Compose if not present
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+      when: compose_check.rc != 0
+
+    - name: Ensure monitoring directory exists
+      file:
+        path: "{{ remote_dir }}/playbooks/monitoring/files"
+        state: directory
+        mode: '0755'
+
   roles:
     - monitoring

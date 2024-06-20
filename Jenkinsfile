@@ -1,20 +1,9 @@
 pipeline {
     agent any
-    
-    /*
-    //if you want to be able to update the vms as soon as theres an update on the github, they just need to enable GITScm polling 
-    //(with the github webhook properly set up) and uncomment this
-    triggers {
-        githubPush()
-    }
-    */
 
     parameters {
         string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
-        /*
-        string(name: 'GIT_REPO', defaultValue: 'https://github.com/RodrigoDBraga/AnsibleTest', description: 'Git repository URL')
-        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to checkout')
-        */
+
     }
     
     environment {
@@ -109,7 +98,7 @@ def runAnsibleOnNodes(runningNodes) {
                     mv ${WORKSPACE}/.git /tmp/.git
                     scp -o StrictHostKeyChecking=no -r ${WORKSPACE} root@${node.ip}:${params.REMOTE_DIR}  
                     mv /tmp/.git ${WORKSPACE}/
-                    ssh -o StrictHostKeyChecking=no root@${node.ip} 'ansible-playbook ${params.REMOTE_DIR}/playbooks/playbook.yml -i "localhost," -e server_ip=${node.ip} -vvv'
+                    ssh -o StrictHostKeyChecking=no root@${node.ip} 'ansible-playbook ${params.REMOTE_DIR}/playbooks/playbook.yml -i "localhost," -e "server_ip=${node.ip} remote_dir=${params.REMOTE_DIR}" -vvv'
                 """
             } catch (Exception e) {
                 echo "Error occurred while processing node ${node.hostname}: ${e.message}"

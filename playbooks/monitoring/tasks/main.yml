@@ -2,26 +2,32 @@
 - name: Gather facts about the host
   setup:
 
+- name: Ensure config directory exists
+  file:
+    path: "{{ remote_dir }}/playbooks/monitoring/files/configs"
+    state: directory
+    mode: '0755'
+
+- name: Copy Docker Compose file
+  copy:
+    src: docker-compose-client-monitor.yml
+    dest: "{{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml"
+    mode: '0644'
+
+- name: Copy OTEL collector config
+  copy:
+    src: configs/otel-collector-config.yaml
+    dest: "{{ remote_dir }}/playbooks/monitoring/files/configs/otel-collector-config.yaml"
+    mode: '0644'
+
 - name: Replace server_ip in configuration
   replace:
-    path: /home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/configs/otel-collector-config.yaml
+    path: "{{ remote_dir }}/playbooks/monitoring/files/configs/otel-collector-config.yaml"
     regexp: 'server_ip_swap'
     replace: '{{ server_ip }}'
 
-
-#- name: Print the IP address of the current machine
-#  debug:
-#    msg: "Current IP address: {{ ansible_default_ipv4.address }}"
-
-
-#- name: Clone monitoring repository
-#  git:
-#    repo: "https://github.com/iprolepsis-project-eu/monitoring.git"   
-#    dest: /opt/monitoring
-#if the above cloning works the scp in the jenkinsfile is unecessary, but for now I've removed this
-
 - name: Start monitoring services
-  shell: docker compose -f/home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d
+  shell: "docker compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d"
   become: yes
 
 - name: Print Monitoring Service Start Success
