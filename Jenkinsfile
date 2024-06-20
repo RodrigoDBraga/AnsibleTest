@@ -1,6 +1,14 @@
 pipeline {
     agent any
     
+    /*
+    //if you want to be able to update the vms as soon as theres an update on the github, they just need to enable GITScm polling 
+    //(with the github webhook properly set up) and uncomment this
+    triggers {
+        githubPush()
+    }
+    */
+
     parameters {
         string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
         /*
