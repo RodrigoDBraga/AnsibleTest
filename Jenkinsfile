@@ -2,19 +2,19 @@ pipeline {
     agent any
     
     parameters {
-        string(name: 'GIT_REPO', defaultValue: 'https://github.com/RodrigoDBraga/AnsibleTest', description: 'Git repository URL')
-        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to checkout')
         string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
     }
     
     environment {
         INVENTORY_FILE = "${WORKSPACE}/playbooks/inventory.ini"
+        GIT_REPO = 'https://github.com/RodrigoDBraga/AnsibleTest'
+        GIT_BRANCH = 'main'
     }
     
     stages {   
         stage('Checkout') {
             steps {
-                git branch: params.GIT_BRANCH, url: params.GIT_REPO
+                git branch: env.GIT_BRANCH, url: env.GIT_REPO
             }
         }
         
