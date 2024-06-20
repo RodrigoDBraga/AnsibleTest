@@ -10,7 +10,7 @@ receivers:
       - job_name: 'main-otel-collector-scraper'
         scrape_interval: 10s
         static_configs:
-          - targets: ['0.0.0.0:8888', '85.244.246.174:8080', '85.244.246.174:9100']
+          - targets: ['0.0.0.0:8888', '85.244.246.174:8081', '85.244.246.174:9100']
 
 processors:
   batch:
