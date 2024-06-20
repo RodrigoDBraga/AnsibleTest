@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Generate fake traces...
   k6-tracing:
