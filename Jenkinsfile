@@ -7,7 +7,7 @@ pipeline {
             }
         }
        //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
-        tage('Get IP Addresses and Create Inventory') {
+        stage('Get IP Addresses and Create Inventory') {
             steps {
                 script {
                     def nodeIpMap = [:]
