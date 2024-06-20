@@ -5,7 +5,7 @@
 - name: Replace server_ip in configuration
   replace:
     path: /home/jenkins/iProlepsisMonitoring/playbooks/monitoring/files/configs/otel-collector-config.yaml
-    regexp: '{{ server_ip_swap }}'
+    regexp: 'server_ip_swap'
     replace: '{{ server_ip }}'
 
 
