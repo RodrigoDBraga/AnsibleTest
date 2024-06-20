@@ -7,26 +7,24 @@ pipeline {
             }
         }
        //sort of requires a check for packages in the vms at some stage due to ansible and so on, but....       
-        stage('Get IP Addresses and Create Inventory') {
+        tage('Get IP Addresses and Create Inventory') {
             steps {
                 script {
-                    workspacePath = env.WORKSPACE
-                    INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
-
                     def nodeIpMap = [:]
                     
-                    // Get all nodes including the master
-                    def allNodes = [Jenkins.instance] + Jenkins.instance.nodes
+                    // Define the inventory file path
+                    def workspacePath = env.WORKSPACE
+                    def INVENTORY_FILE = "${workspacePath}/playbooks/inventory.ini"
                     
                     // Create the inventory file with the header
                     writeFile file: INVENTORY_FILE, text: "[Monitoring]\n"
                     
-                    allNodes.each { node ->
-                        def nodeName = node.nodeName ?: 'master'
-                        def computer = node.toComputer()
+                    // Use Jenkins API to get nodes safely
+                    jenkins.model.Jenkins.instance.computers.each { computer ->
+                        def nodeName = computer.name ?: 'master'
                         
-                        if (computer && computer.online) {
-                            def ipAddresses = computer.getChannel().call(new hudson.model.Computer.ListPossibleNames())
+                        if (computer.online) {
+                            def ipAddresses = computer.getChannel()?.call(new hudson.model.Computer.ListPossibleNames())
                             if (ipAddresses) {
                                 def lastIP = ipAddresses.last()
                                 nodeIpMap[nodeName] = lastIP
