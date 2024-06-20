@@ -2,9 +2,17 @@
 - hosts: localhost
   connection: local
   become: yes
+  gather_facts: false  # No need to gather facts on localhost
+  vars:
+    server_ip: "{{ node_ip }}"  # Make it global
   roles:
     - monitoring
 
+#- hosts: localhost
+#  connection: local
+#  become: yes
+#  roles:
+#    - monitoring
 
 #- hosts: all
 #  become: yes
