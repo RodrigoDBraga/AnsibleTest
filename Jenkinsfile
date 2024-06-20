@@ -51,8 +51,8 @@ pipeline {
     }
     
     post {
-        always {
-            archiveArtifacts artifacts: env.INVENTORY_FILE, allowEmptyArchive: true
+    always {
+        archiveArtifacts artifacts: 'playbooks/inventory.ini', fingerprint: true
         }
     }
 }
