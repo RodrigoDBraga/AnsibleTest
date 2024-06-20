@@ -3,6 +3,10 @@ pipeline {
     
     parameters {
         string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
+        /*
+        string(name: 'GIT_REPO', defaultValue: 'https://github.com/RodrigoDBraga/AnsibleTest', description: 'Git repository URL')
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to checkout')
+        */
     }
     
     environment {
