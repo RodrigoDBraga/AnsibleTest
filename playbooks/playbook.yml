@@ -37,6 +37,19 @@
             name: docker
             state: restarted
 
+        - name: Wait for Docker to be available
+          wait_for:
+            path: /var/run/docker.sock
+            state: present
+            timeout: 60
+
+        - name: Verify Docker installation
+          command: docker --version
+          register: docker_verify
+          retries: 5
+          delay: 10
+          until: docker_verify.rc == 0
+
       when: docker_check.rc != 0
 
     - name: Ensure Docker service is started and enabled
