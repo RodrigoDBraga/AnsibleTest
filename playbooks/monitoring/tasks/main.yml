@@ -6,12 +6,14 @@
 
 - name: Install Docker if not present
   block:
-    - name: Download and install Docker
-      shell: |
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sh get-docker.sh
-      args:
-        warn: false
+    - name: Download Docker installation script
+      get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: '0755'
+
+    - name: Run Docker installation script
+      shell: sh /tmp/get-docker.sh
       register: docker_install
 
     - name: Add current user to docker group
@@ -34,11 +36,10 @@
   ignore_errors: yes
 
 - name: Install Docker Compose plugin if not present
-  shell: |
-    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-    mkdir -p $DOCKER_CONFIG/cli-plugins
-    curl -SL https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-    chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64"
+    dest: "/usr/local/bin/docker-compose"
+    mode: '0755'
   when: compose_check.rc != 0
 
 - name: Ensure config directory exists
