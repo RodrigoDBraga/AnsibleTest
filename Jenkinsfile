@@ -11,7 +11,7 @@ pipeline {
     
     environment {
         INVENTORY_FILE = "${WORKSPACE}/playbooks/inventory.ini"
-        GIT_REPO = 'https://github.com/iprolepsis-project-eu/monitoring'
+        GIT_REPO = 'https://github.com/RodrigoDBraga/AnsibleTest'
         GIT_BRANCH = 'main'
     }
     
