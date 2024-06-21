@@ -28,10 +28,6 @@
             groups: docker
             append: yes
 
-        - name: Reload systemd
-          systemd:
-            daemon_reload: yes
-
         - name: Restart Docker service
           systemd:
             name: docker
