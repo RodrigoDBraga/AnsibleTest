@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    // note that running this will also run
+    // 'rm -rf '/home/jenkins/iProlepsisMonitoring''
+    // "rm -rf "tmp/.git"
+    // so be sure to verify that there's nothing important there before running this jenkinsfile
     parameters {
         string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
 
