@@ -30,7 +30,7 @@
 
   when: docker_check.rc != 0
 
-- name: Check if Docker Compose plugin is installed
+- name: Check if Docker Compose is installed
   shell: docker compose version || docker-compose --version
   register: compose_check
   ignore_errors: yes
