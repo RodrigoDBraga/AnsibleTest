@@ -16,11 +16,11 @@
       shell: sh /tmp/get-docker.sh
       register: docker_install
 
-    - name: Add current user to docker group
-      user:
-        name: "{{ ansible_user }}"
-        groups: docker
-        append: yes
+    #- name: Add current user to docker group
+    #  user:
+    #    name: "{{ ansible_user }}"
+    #    groups: docker
+    #    append: yes
 
     - name: Start Docker service
       systemd:
