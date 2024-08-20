@@ -6,7 +6,7 @@ server:
 #this is the new stuff
 ingester:
   lifecycler:
-    address: 209.97.142.146 #127.0.0.1
+    address: 127.0.0.1 #209.97.142.146 
     ring:
       kvstore:
         store: inmemory
