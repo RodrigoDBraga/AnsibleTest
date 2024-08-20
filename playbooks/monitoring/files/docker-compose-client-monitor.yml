@@ -59,6 +59,34 @@ services:
       - "4317:4317" # OTLP receiver
     restart: unless-stopped
 
+#  promtail:
+ #   image: grafana/promtail:latest
+  #  container_name: promtail
+   # volumes:
+    #  - /var/log:/var/log
+     # - ./configs/promtail-config.yaml:/etc/promtail/config.yml
+#    command: -config.file=/etc/promtail/config.yml
+ #   ports:
+  #    - "9080:9080"
+   # restart: unless-stopped
+
+  logging:
+    driver: loki
+    options:
+      loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
+      loki-external-labels: "job=docker,environment=production,host=${HOSTNAME}"
+
+  # Test logger service
+  test-logger:
+    image: busybox
+    container_name: test_logger
+    command: /bin/sh -c "while true; do echo 'Test log entry from $$(hostname) at $$(date)'; sleep 5; done"
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
+        loki-external-labels: "job=test-logger,environment=production,host=${HOSTNAME}"
+
  # otel-collector:
  #   image: otel/opentelemetry-collector-contrib:latest
  #   container_name: main_otel_collector
