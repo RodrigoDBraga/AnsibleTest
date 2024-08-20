@@ -74,18 +74,18 @@ services:
     driver: loki
     options:
       loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
-      loki-external-labels: "job=docker,environment=production,host=${HOSTNAME}"
+      loki-external-labels: "job=docker,environment=production,host=first_test" # ${HOSTNAME}"
 
   # Test logger service
   test-logger:
     image: busybox
     container_name: test_logger
-    command: /bin/sh -c "while true; do echo 'Test log entry from $$(hostname) at $$(date)'; sleep 5; done"
+    command: /bin/sh -c "while true; do echo 'Test log entry from first_test at $$(date)'; sleep 5; done"
     logging:
       driver: loki
       options:
         loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
-        loki-external-labels: "job=test-logger,environment=production,host=${HOSTNAME}"
+        loki-external-labels: "job=test-logger,environment=production,host=first_test" # ${HOSTNAME}"
 
  # otel-collector:
  #   image: otel/opentelemetry-collector-contrib:latest
