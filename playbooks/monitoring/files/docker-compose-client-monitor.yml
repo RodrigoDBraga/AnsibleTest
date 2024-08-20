@@ -9,12 +9,11 @@ services:
     depends_on:
       - otel-collector
     
-  #this is new stuff##############################################################################################
-  logging:
-    driver: loki
-    options:
-      loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
-      loki-external-labels: "job=docker,environment=production,host=first_test" # ${HOSTNAME}"
+    logging: #this is new stuff##############################################################################################
+      driver: loki
+      options:
+        loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
+        loki-external-labels: "job=docker,environment=production,host=first_test" # ${HOSTNAME}"
 
     # Test logger service
   test-logger:
