@@ -68,7 +68,7 @@
     replace: '{{ server_ip }}'
 
 - name: Start monitoring services
-  shell: "docker compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d || docker-compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d"
+  shell: "docker compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d || docker compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d" # docker-compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose-client-monitor.yml up -d"
   become: yes
 
 - name: Print Monitoring Service Start Success
