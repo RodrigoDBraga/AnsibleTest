@@ -1,17 +1,24 @@
 groups:
-  - name: Server Monitoring
-    rules:
+- name: Server Monitoring
+  rules:
+    - alert: AlwaysFiring
+    expr: vector(1)
+    for: 0s
+    labels:
+      severity: critical
+    annotations:
+      summary: "This alert is always firing"
+      description: "This alert is designed to always be in a firing state for testing"  
 
     - alert: CPUUsageAlert
-      expr: |
-        (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 70
-      for: 5m
-      labels:
-        severity: '{{ if gt $value 90.0 }}critical{{ else }}warning{{ end }}'
-      annotations:
-        summary: 'CPU Usage Alert on {{ $labels.instance }}'
-        description: 'CPU usage on {{ $labels.instance }} is {{ $value | printf "%.2f" }}% for more than 5 minutes'
-
+    expr: (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)) > 10
+    for: 1m
+    labels:
+      severity: '{{ if gt $value 90.0 }}critical{{ else }}warning{{ end }}'
+    annotations:
+      summary: 'CPU Usage Alert on {{ $labels.instance }}'
+      description: 'CPU usage on {{ $labels.instance }} is {{ $value | printf "%.2f" }}% for more than 1 minutes'
+    
     - alert: MemoryUsageAlert
       expr: |
         (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 80
@@ -62,7 +69,7 @@ groups:
         summary: 'Network Error Rate Alert on {{ $labels.instance }}'
         description: 'Network error rate on {{ $labels.instance }} is {{ $value | printf "%.2f" }}% for more than 5 minutes'
 
-- alert: ServiceAvailabilityAlert
+    - alert: ServiceAvailabilityAlert
       expr: |
         avg_over_time(up{job="your_service_job"}[5m]) * 100 < 99
       for: 5m

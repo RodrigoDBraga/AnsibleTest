@@ -1,11 +1,11 @@
 global:
-  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. Default is every 1 minute.
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090'] # The endpoint of your Prometheus server.
+      - targets: ['localhost:9090']
 
 rule_files:
-  - 'alerts.yaml' # The path to your alert rules file (if you have one).
+  - /etc/prometheus/alerts.yaml  # Specify the alert rules file
