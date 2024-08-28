@@ -11,8 +11,8 @@ groups:
       description: "This alert is designed to always be in a firing state for testing"  
 
     - alert: CPUUsageAlert
-    expr: (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)) > 10
-    for: 1m
+    expr: (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)) > 80
+    for: 5m
     labels:
       severity: '{{ if gt $value 90.0 }}critical{{ else }}warning{{ end }}'
     annotations:
