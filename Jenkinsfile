@@ -194,6 +194,7 @@ def runAnsibleOnMonitoringServer(node) {
     }
 }
 
+/*
 //think this is deprecated
 def runAnsibleOnNodes(runningNodes) {
     runningNodes.each { node ->
@@ -227,4 +228,4 @@ def runAnsibleOnNodes(runningNodes) {
             }
         }
     }
-}
+}*/
