@@ -9,7 +9,7 @@ import os
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
 CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
-REPORT_DURATION = timedelta(hours=6)  # Can be changed to timedelta(days=90) for 3 months
+REPORT_DURATION = timedelta(days=90) #timedelta(hours=6)  
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
 
 # Ensure the output directory exists
