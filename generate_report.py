@@ -100,7 +100,9 @@ def plot_metric(df, metric_name, server, unit):
 
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"{server.replace(':', '_')}_{metric_name}.png", dpi=300)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{server.replace(':', '_')}_{metric_name}_{timestamp}.png"
+    plt.savefig(os.path.join(OUTPUT_DIR, filename), dpi=300)
     plt.close()
 
 def get_spaced_max_values(df, n=5, min_interval=timedelta(hours=24)):
