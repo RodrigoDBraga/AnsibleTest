@@ -13,16 +13,39 @@ pipeline {
         INVENTORY_FILE = "${WORKSPACE}/playbooks/inventory.ini"
         GIT_REPO = 'https://github.com/RodrigoDBraga/AnsibleTest'
         GIT_BRANCH = 'main'
+        //
+        MONITORING_SERVER_IP = '209.97.142.146'
+        //
     }
     
+    triggers {
+        cron('* * * * *') // Run every minute for testing purposes
+    }
+
+
     stages {   
+        
+        stage('Determine Execution Type') {
+            steps {
+                script {
+                    env.IS_SCHEDULED_RUN = currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0
+                }
+            }
+        }
+
         stage('Checkout') {
+            when {
+                expression { !env.IS_SCHEDULED_RUN.toBoolean() }
+            }
             steps {
                 git branch: env.GIT_BRANCH, url: env.GIT_REPO
             }
         }
         
         stage('Get IP Addresses and Create Inventory') {
+            when {
+                expression { !env.IS_SCHEDULED_RUN.toBoolean() }
+            }
             steps {
                 script {
                     createInventory()
@@ -31,12 +54,35 @@ pipeline {
         }
         
         stage('Run Ansible Playbook') {
+            when {
+                expression { !env.IS_SCHEDULED_RUN.toBoolean() }
+            }
             steps {
                 script {
                     def runningNodes = getRunningNodesFromInventory()
                     echo "Running Nodes (from inventory): ${runningNodes}"
                     
-                    runAnsibleOnNodes(runningNodes)
+                    runningNodes.each { node ->
+                        if (node.ip == env.MONITORING_SERVER_IP) {
+                            runAnsibleOnMonitoringServer(node)
+                        } else {
+                            runAnsibleOnClientServer(node)
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Generate Report') {
+            when {
+                expression { env.IS_SCHEDULED_RUN.toBoolean() }
+            }
+            steps {
+                script {
+                    // Run the report generation script on the monitoring server
+                    sh """
+                        ssh root@${env.MONITORING_SERVER_IP} 'cd /home/jenkins/iProlepsisMonitoring && python3 generate_report.py'
+                    """
                 }
             }
         }
@@ -89,6 +135,39 @@ def getRunningNodesFromInventory() {
     return runningNodes
 }
 
+def runAnsibleOnClientServer(node) {
+    sshagent([node.hostname]) {
+        try {
+            // ... (keep existing setup steps)
+
+            sh """
+                ssh -o StrictHostKeyChecking=no root@${node.ip} '
+                    ansible-playbook ${params.REMOTE_DIR}/playbooks/playbook.yml -i "localhost," -e "server_ip=${node.ip} remote_dir=${params.REMOTE_DIR} is_monitoring_server=false" -vvv'
+            """
+        } catch (Exception e) {
+            echo "Error occurred while processing client server ${node.hostname}: ${e.message}"
+        }
+    }
+}
+
+
+def runAnsibleOnMonitoringServer(node) {
+    sshagent([node.hostname]) {
+        try {
+            // ... (keep existing setup steps)
+
+            sh """
+                ssh -o StrictHostKeyChecking=no root@${node.ip} '
+                    ansible-playbook ${params.REMOTE_DIR}/playbooks/playbook.yml -i "localhost," -e "server_ip=${node.ip} remote_dir=${params.REMOTE_DIR} is_monitoring_server=true" -vvv'
+            """
+        } catch (Exception e) {
+            echo "Error occurred while processing monitoring server ${node.hostname}: ${e.message}"
+        }
+    }
+}
+
+
+//think this is deprecated
 def runAnsibleOnNodes(runningNodes) {
     runningNodes.each { node ->
         sshagent([node.hostname]) {
