@@ -135,10 +135,8 @@ def getRunningNodesFromInventory() {
 }
 
 def runAnsibleOnClientServer(node) {
-    echo "got into the runansibleclientserver"
     sshagent([node.hostname]) {
         try {
-            echo "went past the sshagent"
             sh "ssh -o StrictHostKeyChecking=no root@${node.ip} 'rm -rf ${params.REMOTE_DIR}'"
             sh """
                 if [ -d "tmp/.git" ]; then
