@@ -63,9 +63,11 @@ pipeline {
                         if (node.ip == env.MONITORING_SERVER_IP) {
                             runAnsibleOnMonitoringServer(node)
                         } else {
+                            echo "is going through client servers"
                             runAnsibleOnClientServer(node)
                         }
                     }
+                    echo "went through running nodes"
                 }
             }
         }
