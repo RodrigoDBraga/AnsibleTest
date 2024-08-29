@@ -34,9 +34,6 @@ pipeline {
         }
 
         stage('Checkout') {
-            when {
-                expression { !env.IS_SCHEDULED_RUN.toBoolean() }
-            }
             steps {
                 git branch: env.GIT_BRANCH, url: env.GIT_REPO
             }
