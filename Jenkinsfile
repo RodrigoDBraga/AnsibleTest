@@ -77,7 +77,7 @@ pipeline {
 
         stage('Generate Report') {
             when {
-                expression { env.IS_SCHEDULED_RUN.toBoolean() }
+                expression { env.IS_SCHEDULED_RUN.toBoolean() || params.SERVER_TYPE == 'Both' || params.SERVER_TYPE == 'Monitoring'}
             }
             steps {
                 script {
