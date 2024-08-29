@@ -6,7 +6,7 @@ pipeline {
     // so be sure to verify that there's nothing important there before running this jenkinsfile
     parameters {
         string(name: 'REMOTE_DIR', defaultValue: '/home/jenkins/iProlepsisMonitoring', description: 'Remote directory for deployment')
-
+        choice(name: 'SERVER_TYPE', choices: ['Both', 'Client', 'Monitoring'], description: 'Select which type of servers to run on')
     }
     
     environment {
@@ -61,13 +61,16 @@ pipeline {
                     
                     runningNodes.each { node ->
                         if (node.ip == env.MONITORING_SERVER_IP) {
-                            runAnsibleOnMonitoringServer(node)
+                            if (params.SERVER_TYPE in ['Both', 'Monitoring']) {
+                                runAnsibleOnMonitoringServer(node)
+                            }
                         } else {
-                            echo "is going through client servers"
-                            runAnsibleOnClientServer(node)
+                            if (params.SERVER_TYPE in ['Both', 'Client']) {
+                                runAnsibleOnClientServer(node)
+                            }
                         }
                     }
-                    echo "went through running nodes"
+                    echo "Finished processing running nodes"
                 }
             }
         }
