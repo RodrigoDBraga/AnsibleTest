@@ -18,9 +18,9 @@ pipeline {
         //
     }
     
-    //triggers {
-    //    cron('* * * * *') // Run every minute for testing purposes
-    //}
+    triggers {
+        cron('0 0 1 */3 *') // cron('* * * * *') // Run every minute for testing purposes
+    }
 
 
     stages {   
@@ -28,7 +28,7 @@ pipeline {
         stage('Determine Execution Type') {
             steps {
                 script {
-                    env.IS_SCHEDULED_RUN = False //currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0
+                    env.IS_SCHEDULED_RUN = currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0
                 }
             }
         }
