@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from collections import defaultdict
+import os
 
 # Configuration
 LOKI_URL = "http://localhost:3100"
