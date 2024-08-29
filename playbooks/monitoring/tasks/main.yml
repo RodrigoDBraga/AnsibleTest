@@ -50,6 +50,19 @@
     mode: '0644'
   when: is_monitoring_server | bool
 
+- name: Install Loki Docker plugin
+  docker_plugin:
+    name: loki
+    plugin_name: grafana/loki-docker-driver:latest
+    state: present
+  when: is_monitoring_server | bool
+
+- name: Enable Loki Docker plugin
+  command: docker plugin enable loki
+  when: is_monitoring_server | bool
+
+
+
 - name: Copy Docker Compose file for client server
   copy:
     src: docker-compose-client-monitor.yml
@@ -70,7 +83,7 @@
     replace: '{{ server_ip }}'
 
 - name: Start monitoring services on monitoring server
-  shell: "docker compose -f {{ remote_dir }}/playbooks/monitoring/files/docker-compose.yml up -d"
+  shell: "docker compose -f {{ remote_dir }}/docker-compose.yml up -d"
   become: yes
   when: is_monitoring_server | bool
 
