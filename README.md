@@ -62,7 +62,7 @@ To incorporate the monitoring setup into your Jenkins pipeline, add the command 
 
 ### 7. Important Notes
 
-- **Monitoring for Each VM:** The steps outlined above must be followed for each individual VM that needs to be monitored. Each VM will then send its metrics to the central monitoring server.
+- **Monitoring for Each VM:** The steps outlined above (except for the setups done through Jenkinsfile, where the server that need to be monitored just have to be considered nodes of the Jenkins server) must be followed for each individual VM that needs to be monitored. Each VM will then send its metrics to the central monitoring server.
   
 - **Data Storage:** The Grafana dashboard will display and store metrics and visualizations for all monitored hosts. This data will be automatically monitored and stored on the server, allowing for later analysis and reporting.
 
