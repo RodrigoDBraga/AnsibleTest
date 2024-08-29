@@ -9,6 +9,10 @@ LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
 CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
 REPORT_DURATION = timedelta(hours=6)  # Can be changed to timedelta(days=90) for 3 months
+OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
+
+# Ensure the output directory exists
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Metrics configuration
 METRICS = {
@@ -162,10 +166,12 @@ def process_alerts(alert_data):
 def generate_report(server):
     end_time = datetime.now()
     start_time = end_time - REPORT_DURATION
+    timestamp = end_time.strftime("%Y%m%d_%H%M%S")
 
     print(f"Generating report for {server}")
 
-    with open(f"{server.replace(':', '_')}_report.txt", "w") as f:
+    report_filename = f"{server.replace(':', '_')}_report_{timestamp}.txt"
+    with open(os.path.join(OUTPUT_DIR, report_filename), "w") as f:
         f.write(f"Report for {server}\n")
         f.write(f"Duration: {REPORT_DURATION}\n")
         f.write(f"From: {start_time} To: {end_time}\n\n")
