@@ -43,12 +43,12 @@
     state: directory
     mode: '0755'
 
-- name: Copy Docker Compose file for monitoring server
-  copy:
-    src: docker-compose.yml
-    dest: "docker compose -f {{ remote_dir }}/docker-compose.yml up -d"
-    mode: '0644'
-  when: is_monitoring_server | bool
+#- name: Copy Docker Compose file for monitoring server
+#  copy:
+#    src: docker-compose.yml
+#    dest: "docker compose -f {{ remote_dir }}/docker-compose.yml up -d"
+#    mode: '0644'
+#  when: is_monitoring_server | bool
 
 - name: Copy Docker Compose file for client server
   copy:
