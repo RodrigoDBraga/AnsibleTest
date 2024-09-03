@@ -9,7 +9,7 @@ import os
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
 CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
-REPORT_DURATION = timedelta(days=90) #timedelta(hours=6)  
+REPORT_DURATION = timedelta(days=90) 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
 
 # Ensure the output directory exists
@@ -18,7 +18,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # Metrics configuration
 METRICS = {
     "cpu_usage": {
-        "query": '100 - (avg by(instance) (rate(node_cpu_seconds_total{{instance="{}",mode="idle"}}[1m])) * 100)',
+        "query": '100 - (avg by(instance) (rate(node_cpu_seconds_total{{instance="{}",mode="idle"}}[5m])) * 100)',
         "unit": "%",
         "title": "CPU Usage"
     },
@@ -37,6 +37,13 @@ METRICS = {
         "unit": "ops/sec",
         "title": "Disk I/O"
     },
+    # new
+    "network_throughput_percentage": {
+    "query": '100 * (sum by(instance) (rate(node_network_transmit_bytes_total[5m]) + rate(node_network_receive_bytes_total[5m]))) / sum(node_network_speed_bytes)',
+    "unit": "%",
+    "title": "Network Throughput Percentage"
+    },
+    # new
     "network_throughput": {
         "query": '(sum by(instance) (rate(node_network_transmit_bytes_total[5m]) + rate(node_network_receive_bytes_total[5m]))) / 1024 / 1024',
         "unit": "MB/s",
@@ -205,8 +212,9 @@ def generate_report(server):
                 f.write(f"  {idx}: {row['value']:.3f} {metric_info['unit']}\n")
 
             # You would need to define appropriate alert thresholds for each metric
-            #alert_threshold = 90 if metric_name == 'cpu_usage' else 80  # Example threshold
-            alert_threshold = 0.7 if metric_name == 'network_throughput' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
+            
+            #alert_threshold = 0.7 if metric_name == 'network_throughput' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
+            alert_threshold = 70 if metric_name == 'network_throughput_percentage' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
             alert_periods = get_alert_periods(df, alert_threshold)
             if alert_periods:
                 f.write(f"Alert Periods (threshold: {alert_threshold} {metric_info['unit']}):\n")
