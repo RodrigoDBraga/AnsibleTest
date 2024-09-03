@@ -286,7 +286,8 @@ def generate_report(server):
             if not data['data']['result']:
                 f.write(f"No {metric_info['title']} data available. Check if the server is reachable and exporting metrics.\n\n")
                 continue
-            # Call this function in your generate_report function
+
+            # Call this function to check if the network throughput speed is up to par
             #test_full_network_query(server, start_time, end_time)
 
             df = pd.DataFrame(data['data']['result'][0]['values'], columns=['timestamp', 'value'])
