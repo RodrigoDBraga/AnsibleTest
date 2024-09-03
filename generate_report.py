@@ -9,7 +9,7 @@ import os
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
 CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
-REPORT_DURATION = timedelta(days=2) 
+REPORT_DURATION = timedelta(minutes=10) 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
 
 # Ensure the output directory exists
@@ -38,12 +38,23 @@ METRICS = {
         "title": "Disk I/O"
     },
     # new
-    "network_throughput_percentage": {
-    "query": '100 * (sum by(instance) (rate(node_network_transmit_bytes_total[5m]) + rate(node_network_receive_bytes_total[5m]))) / sum(node_network_speed_bytes)',
-    "unit": "%",
-    "title": "Network Throughput Percentage"
-    },
+    #"network_throughput_percentage": {
+    #"query": '100 * (sum by(instance) (rate(node_network_transmit_bytes_total[5m]) + rate(node_network_receive_bytes_total[5m]))) / sum(node_network_speed_bytes)',
+    #"unit": "%",
+    #"title": "Network Throughput Percentage"
+    #},
     # new
+    "network_throughput_percentage": {
+        "query": """
+    100 * 
+    sum(rate(node_network_transmit_bytes_total[5m]) + rate(node_network_receive_bytes_total[5m])) 
+    / 
+    scalar(sum(node_network_speed_bytes))
+    """,
+        "unit": "%",
+        "title": "Network Throughput Percentage"
+    },
+    #new
     "network_throughput": {
         "query": '(sum by(instance) (rate(node_network_transmit_bytes_total[5m]) + rate(node_network_receive_bytes_total[5m]))) / 1024 / 1024',
         "unit": "MB/s",
@@ -161,7 +172,7 @@ def query_alerts(start_time, end_time):
 
 def process_alerts(alert_data):
     alert_occurrences = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
-    
+    print(alert_data.keys())
     for result in alert_data['data']['result']:
         alert_name = result['metric']['alertname']
         severity = result['metric'].get('severity', 'unknown')
@@ -172,6 +183,87 @@ def process_alerts(alert_data):
                 alert_occurrences[alert_name][date][severity] += 1
     
     return alert_occurrences
+
+from datetime import datetime, timedelta
+
+def test_full_network_query(server, start_time, end_time):
+    # Test individual components
+    transmit_query = f'sum(rate(node_network_transmit_bytes_total{{instance="{server}"}}[5m]))'
+    receive_query = f'sum(rate(node_network_receive_bytes_total{{instance="{server}"}}[5m]))'
+    speed_query = f'sum(node_network_speed_bytes{{instance="{server}"}})'
+
+    transmit_data = query_prometheus(transmit_query, start_time, end_time)
+    receive_data = query_prometheus(receive_query, start_time, end_time)
+    speed_data = query_prometheus(speed_query, start_time, end_time)
+
+    print(f"Detailed network query diagnosis for {server}:")
+
+    speed_value = None
+    if speed_data['data']['result']:
+        try:
+            # Extract the most recent speed value
+            speed_value = float(speed_data['data']['result'][0]['values'][-1][1])
+            print(f"  - node_network_speed_bytes value: {speed_value}")
+            if speed_value == 0:
+                print("    Warning: Speed is zero, this will cause division by zero in the full query.")
+        except (IndexError, KeyError, ValueError) as e:
+            print(f"  - Error extracting node_network_speed_bytes value: {str(e)}")
+    else:
+        print("  - node_network_speed_bytes data is missing.")
+
+    if transmit_data['data']['result'] and receive_data['data']['result'] and speed_data['data']['result']:
+        print("  All required metrics are present. Testing full query...")
+        
+        full_query = f'100 * (sum by(instance) (rate(node_network_transmit_bytes_total{{instance="{server}"}}[5m]) + rate(node_network_receive_bytes_total{{instance="{server}"}}[5m]))) / sum(node_network_speed_bytes{{instance="{server}"}})'
+        full_data = query_prometheus(full_query, start_time, end_time)
+        
+        if full_data['data']['result']:
+            print("  Full query returned data successfully.")
+            print(f"  Result: {full_data['data']['result']}")
+        else:
+            print("  Full query returned no data despite all metrics being present.")
+            print("  This could be due to:")
+            if speed_value == 0:
+                print("    - Division by zero (node_network_speed_bytes is zero)")
+            elif speed_value is None:
+                print("    - Unable to determine node_network_speed_bytes value")
+            else:
+                print("    - No data points within the specified time range")
+            print(f"  Time range: {start_time} to {end_time}")
+    else:
+        print("  Full query was not tested due to missing metrics.")
+
+    print("\nRaw data from Prometheus:")
+    print(f"Transmit data: {transmit_data}")
+    print(f"Receive data: {receive_data}")
+    print(f"Speed data: {speed_data}")
+
+    print("\nCalculated network usage:")
+    try:
+        latest_transmit = float(transmit_data['data']['result'][0]['values'][-1][1])
+        latest_receive = float(receive_data['data']['result'][0]['values'][-1][1])
+        total_usage = latest_transmit + latest_receive
+        if speed_value and speed_value > 0:
+            usage_percentage = (total_usage / speed_value) * 100
+            print(f"  Current network usage: {usage_percentage:.2f}%")
+            print(f"  Total usage: {total_usage:.2f} bytes/s")
+            print(f"  Network speed: {speed_value:.2f} bytes/s")
+        else:
+            print(f"  Total usage: {total_usage:.2f} bytes/s")
+            print("  Unable to calculate usage percentage due to missing or invalid speed data")
+    except Exception as e:
+        print(f"  Error calculating network usage: {str(e)}")
+
+    print("\nTime range check:")
+    current_time = datetime.now()
+    if start_time > current_time or end_time > current_time:
+        print("  Warning: The specified time range includes future dates.")
+        print(f"  Current time: {current_time}")
+        print(f"  Query start time: {start_time}")
+        print(f"  Query end time: {end_time}")
+    else:
+        print("  Time range appears to be valid.")
+
 
 def generate_report(server):
     end_time = datetime.now()
@@ -187,12 +279,15 @@ def generate_report(server):
         f.write(f"From: {start_time} To: {end_time}\n\n")
 
         for metric_name, metric_info in METRICS.items():
-            query = metric_info['query'].format(server)
+            query = metric_info['query'].format(server) # this was changed because of network speed metric
+            #query = metric_info['query'].replace('$instance', server)
             data = query_prometheus(query, start_time, end_time)
 
             if not data['data']['result']:
                 f.write(f"No {metric_info['title']} data available. Check if the server is reachable and exporting metrics.\n\n")
                 continue
+            # Call this function in your generate_report function
+            #test_full_network_query(server, start_time, end_time)
 
             df = pd.DataFrame(data['data']['result'][0]['values'], columns=['timestamp', 'value'])
             df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
