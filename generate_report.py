@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import os
 import argparse
+import json
 
 parser = argparse.ArgumentParser(description='Generate monitoring report for client servers.')
 parser.add_argument('--client_ips', type=str, help='Comma-separated list of client server IPs')
@@ -13,9 +14,32 @@ args = parser.parse_args()
 # Configuration
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
-CLIENT_SERVERS = args.client_ips.split(',') if args.client_ips else [] #CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
+#CLIENT_SERVERS = args.client_ips.split(',') if args.client_ips else [] #CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
 REPORT_DURATION = timedelta(minutes=10) 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
+
+CLIENT_IPS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client_ips.json')
+
+def load_client_ips():
+    if os.path.exists(CLIENT_IPS_FILE):
+        with open(CLIENT_IPS_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_client_ips(ips):
+    with open(CLIENT_IPS_FILE, 'w') as f:
+        json.dump(ips, f)
+
+parser = argparse.ArgumentParser(description='Generate monitoring report for client servers.')
+parser.add_argument('--client_ips', type=str, help='Comma-separated list of client server IPs')
+args = parser.parse_args()
+
+if args.client_ips:
+    CLIENT_SERVERS = args.client_ips.split(',')
+    save_client_ips(CLIENT_SERVERS)
+else:
+    CLIENT_SERVERS = load_client_ips()
+
 
 # Ensure the output directory exists
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -374,10 +398,13 @@ def generate_report(server):
     print(f"Report generated for {server}")
 
 if __name__ == "__main__":
-    for server in CLIENT_SERVERS:
-        generate_report(server)
-
-    print("All reports generated.")
+    if not CLIENT_SERVERS:
+        print("No client IPs found. Please run the script with --client_ips argument to set the IPs.")
+    else:
+        for server in CLIENT_SERVERS:
+            generate_report(server)
+        print("All reports generated.")
+        
 """
 # Generate reports for each server
 for server in CLIENT_SERVERS:

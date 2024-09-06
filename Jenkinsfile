@@ -96,7 +96,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
     always {
         archiveArtifacts artifacts: 'playbooks/inventory.ini', fingerprint: true
