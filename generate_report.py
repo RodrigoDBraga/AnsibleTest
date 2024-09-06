@@ -4,11 +4,16 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from collections import defaultdict
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Generate monitoring report for client servers.')
+parser.add_argument('--client_ips', type=str, help='Comma-separated list of client server IPs')
+args = parser.parse_args()
 
 # Configuration
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
-CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
+CLIENT_SERVERS = args.client_ips.split(',') if args.client_ips else [] #CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
 REPORT_DURATION = timedelta(minutes=10) 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
 
@@ -368,8 +373,15 @@ def generate_report(server):
 
     print(f"Report generated for {server}")
 
+if __name__ == "__main__":
+    for server in CLIENT_SERVERS:
+        generate_report(server)
+
+    print("All reports generated.")
+"""
 # Generate reports for each server
 for server in CLIENT_SERVERS:
     generate_report(server)
 
 print("All reports generated.")
+"""
