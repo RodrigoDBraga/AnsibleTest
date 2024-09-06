@@ -81,15 +81,22 @@ pipeline {
             }
             steps {
                 script {
+                    def runningNodes = getRunningNodesFromInventory()
+                    def clientIPs = runningNodes.findAll { it.ip != env.MONITORING_SERVER_IP }.collect { it.ip }
+                    def clientIPsString = clientIPs.join(',')
+                    
                     // Run the report generation script on the monitoring server
                     sh """
-                        ssh root@${env.MONITORING_SERVER_IP} 'cd /home/jenkins/iProlepsisMonitoring && python3 generate_report.py'
+                        ssh root@${env.MONITORING_SERVER_IP} '
+                            cd /home/jenkins/iProlepsisMonitoring && 
+                            python3 generate_report.py --client_ips=${clientIPsString}
+                        '
                     """
                 }
             }
         }
     }
-    
+
     post {
     always {
         archiveArtifacts artifacts: 'playbooks/inventory.ini', fingerprint: true
