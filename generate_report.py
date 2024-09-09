@@ -105,12 +105,12 @@ METRICS = {
         "query": 'avg(avg_over_time(scrape_duration_seconds{{instance="{}"}}[5m]))',
         "unit": "seconds",
         "title": "Average Response Time (All Jobs)"
-    },
-    "job_specific_availability": {
-        "query": 'avg(up{{instance="{}"}}) by (job)',
-        "unit": "%",
-        "title": "Job-Specific Availability"
-    }
+    }#,
+    #"job_specific_availability": {
+    #    "query": 'avg(up{{instance="{}"}}) by (job)',
+    #    "unit": "%",
+    #    "title": "Job-Specific Availability"
+    #}
 }
 
 def process_job_specific_data(data):
