@@ -200,10 +200,11 @@ def query_alerts(start_time, end_time):
     response = requests.get(url, params=params)
     return response.json()
 
+def format_timestamp(timestamp):
+    return timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
 def process_alerts(alert_data):
     alert_occurrences = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
-    print(alert_data.keys())
     for result in alert_data['data']['result']:
         alert_name = result['metric']['alertname']
         severity = result['metric'].get('severity', 'unknown')
@@ -336,17 +337,14 @@ def generate_report(server):
             spaced_max_values = get_spaced_max_values(df, 5, timedelta(hours=24))
             f.write("Top 5 Maximum Values (at least 24 hours apart):\n")
             for idx, row in spaced_max_values.iterrows():
-                f.write(f"  {idx}: {row['value']:.3f} {metric_info['unit']}\n")
+                f.write(f"  {format_timestamp(idx)}: {row['value']:.3f} {metric_info['unit']}\n")
 
-            # You would need to define appropriate alert thresholds for each metric
-            
-            #alert_threshold = 0.7 if metric_name == 'network_throughput' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
             alert_threshold = 70 if metric_name == 'network_throughput_percentage' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
             alert_periods = get_alert_periods(df, alert_threshold)
             if alert_periods:
                 f.write(f"Alert Periods (threshold: {alert_threshold} {metric_info['unit']}):\n")
                 for start, end, max_val in alert_periods:
-                    f.write(f"  {start} to {end}: Max value {max_val:.3f} {metric_info['unit']}\n")
+                    f.write(f"  {format_timestamp(start)} to {format_timestamp(end)}: Max value {max_val:.3f} {metric_info['unit']}\n")
             else:
                 f.write(f"No alerts triggered (threshold: {alert_threshold} {metric_info['unit']})\n")
 
@@ -366,8 +364,6 @@ def generate_report(server):
             
             f.write(f"  {alert_name}:\n")
             f.write(f"    Total Occurrences: {total_occurrences}")
-            #f.write(f"    Total Occurrences: {len(dates)}")
-            #f.write(f"    This is dates: {dates}")
             if total_critical > 0:
                 f.write(f", {total_critical} critical")
             if total_warning > 0:
@@ -382,6 +378,21 @@ def generate_report(server):
                 triggered_days.append(f"{date} ({severity}, {day_total})")
             f.write(", ".join(triggered_days))
             f.write("\n\n")
+
+        # Add specific reporting for ServiceAvailabilityAlert and ResponseTimeAlert
+        if 'ServiceAvailabilityAlert' in alert_occurrences:
+            f.write("  Service Availability Alerts:\n")
+            for date, severities in sorted(alert_occurrences['ServiceAvailabilityAlert'].items()):
+                for severity, count in severities.items():
+                    f.write(f"    {date} - {severity.capitalize()}: {count} occurrences\n")
+            f.write("\n")
+
+        if 'ResponseTimeAlert' in alert_occurrences:
+            f.write("  Response Time Alerts:\n")
+            for date, severities in sorted(alert_occurrences['ResponseTimeAlert'].items()):
+                for severity, count in severities.items():
+                    f.write(f"    {date} - {severity.capitalize()}: {count} occurrences\n")
+            f.write("\n")
 
         # Query logs
         log_query = '{job =~".+"}'
