@@ -97,14 +97,14 @@ METRICS = {
         "title": "Network Error Rate"
     },
     "service_availability": {
-        "query": 'avg_over_time(up{{job="node"}}[5m]) * 100',
+        "query": '100 * avg(up{{job="node-exporter", instance="{}"}})',
         "unit": "%",
         "title": "Service Availability"
     },
     "response_time": {
-        "query": 'histogram_quantile(0.95, sum(rate(node_scrape_collector_duration_seconds_bucket[5m])) by (le, instance))',
+        "query": 'avg(avg_over_time(scrape_duration_seconds{{job="node-exporter", instance="{}"}}[5m]))',
         "unit": "seconds",
-        "title": "95th Percentile Response Time"
+        "title": "Average Response Time"
     }
 }
 
