@@ -19,7 +19,7 @@ pipeline {
     }
     
     triggers {
-        cron('0 0 1 */3 *') // cron('* * * * *') // Run every minute for testing purposes
+        cron('0 0 * * 0') // cron('* * * * *') // Run every minute for testing purposes
     }
 
 

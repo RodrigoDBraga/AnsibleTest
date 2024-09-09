@@ -15,7 +15,7 @@ args = parser.parse_args()
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
 #CLIENT_SERVERS = args.client_ips.split(',') if args.client_ips else [] #CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
-REPORT_DURATION = timedelta(seconds=10) 
+REPORT_DURATION = timedelta(days=7) 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
 
 CLIENT_IPS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client_ips.json')
