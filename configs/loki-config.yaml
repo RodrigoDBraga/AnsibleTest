@@ -3,7 +3,7 @@ auth_enabled: false
 server:
   http_listen_port: 3100
 
-#this is the new stuff
+
 ingester:
   lifecycler:
     address: 127.0.0.1 #209.97.142.146 
@@ -14,7 +14,7 @@ ingester:
     final_sleep: 0s
   chunk_idle_period: 5m
   chunk_retain_period: 30s
-######
+
 
 common:
   path_prefix: /loki
