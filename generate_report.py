@@ -15,7 +15,7 @@ args = parser.parse_args()
 LOKI_URL = "http://localhost:3100"
 PROMETHEUS_URL = "http://localhost:9090"
 #CLIENT_SERVERS = args.client_ips.split(',') if args.client_ips else [] #CLIENT_SERVERS = ["209.97.134.226:9100", "142.93.38.159:9100"]
-REPORT_DURATION = timedelta(minutes=10) 
+REPORT_DURATION = timedelta(seconds=10) 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ServerReports")
 
 CLIENT_IPS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client_ips.json')
@@ -97,7 +97,7 @@ METRICS = {
         "title": "Network Error Rate"
     },
     "service_availability": {
-        "query": '100 * avg(up{{instance="{}"}})',
+        "query": '100 - 100 * avg(up{{instance="{}"}})',
         "unit": "%",
         "title": "Service Availability (All Jobs)"
     },
@@ -339,7 +339,7 @@ def generate_report(server):
             for idx, row in spaced_max_values.iterrows():
                 f.write(f"  {format_timestamp(idx)}: {row['value']:.3f} {metric_info['unit']}\n")
 
-            alert_threshold = 70 if metric_name == 'network_throughput_percentage' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
+            alert_threshold = 70 if metric_name == 'network_throughput_percentage' else 0.01 if metric_name == 'network_error_rate' else 1 if metric_name == 'service_availability' else 2 if metric_name == 'response_time' else 80 
             alert_periods = get_alert_periods(df, alert_threshold)
             if alert_periods:
                 f.write(f"Alert Periods (threshold: {alert_threshold} {metric_info['unit']}):\n")
@@ -378,7 +378,7 @@ def generate_report(server):
                 triggered_days.append(f"{date} ({severity}, {day_total})")
             f.write(", ".join(triggered_days))
             f.write("\n\n")
-
+        """
         # Add specific reporting for ServiceAvailabilityAlert and ResponseTimeAlert
         if 'ServiceAvailabilityAlert' in alert_occurrences:
             f.write("  Service Availability Alerts:\n")
@@ -393,6 +393,7 @@ def generate_report(server):
                 for severity, count in severities.items():
                     f.write(f"    {date} - {severity.capitalize()}: {count} occurrences\n")
             f.write("\n")
+        """
 
         # Query logs
         log_query = '{job =~".+"}'

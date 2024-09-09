@@ -71,10 +71,10 @@ groups:
 
   - alert: ServiceAvailabilityAlert
     expr: |
-      avg(up) by (instance) * 100 < 99
+      100 - (avg(up) by (instance) * 100) > 1
     for: 5m
     labels:
-      severity: '{{ if lt $value 95.0 }}critical{{ else }}warning{{ end }}'
+      severity: '{{ if gt $value 5.0 }}critical{{ else }}warning{{ end }}'
     annotations:
       summary: 'Service Availability Alert for {{ $labels.instance }}'
       description: 'Overall service availability for {{ $labels.instance }} is {{ $value | printf "%.2f" }}% over the last 5 minutes'
