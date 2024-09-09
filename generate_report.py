@@ -97,16 +97,30 @@ METRICS = {
         "title": "Network Error Rate"
     },
     "service_availability": {
-        "query": '100 * avg(up{{job="node-exporter", instance="{}"}})',
+        "query": '100 * avg(up{{instance="{}"}})',
         "unit": "%",
-        "title": "Service Availability"
+        "title": "Service Availability (All Jobs)"
     },
     "response_time": {
-        "query": 'avg(avg_over_time(scrape_duration_seconds{{job="node-exporter", instance="{}"}}[5m]))',
+        "query": 'avg(avg_over_time(scrape_duration_seconds{{instance="{}"}}[5m]))',
         "unit": "seconds",
-        "title": "Average Response Time"
+        "title": "Average Response Time (All Jobs)"
+    },
+    "job_specific_availability": {
+        "query": 'avg(up{{instance="{}"}}) by (job)',
+        "unit": "%",
+        "title": "Job-Specific Availability"
     }
 }
+
+def process_job_specific_data(data):
+    job_availabilities = {}
+    for result in data['data']['result']:
+        job = result['metric']['job']
+        value = float(result['value'][1]) * 100  # Convert to percentage
+        job_availabilities[job] = f"{value:.2f}%"
+    return job_availabilities
+
 
 def query_prometheus(query, start_time, end_time):
     url = f"{PROMETHEUS_URL}/api/v1/query_range"
@@ -321,38 +335,46 @@ def generate_report(server):
             # Call this function to check if the network throughput speed is up to par
             #test_full_network_query(server, start_time, end_time)
 
-            df = pd.DataFrame(data['data']['result'][0]['values'], columns=['timestamp', 'value'])
-            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
-            df.set_index('timestamp', inplace=True)
-            df['value'] = df['value'].astype(float)
-
-            avg_value = df['value'].mean()
-            max_value = df['value'].max()
-
-            f.write(f"{metric_info['title']}:\n")
-            f.write(f"Average: {avg_value:.3f} {metric_info['unit']}\n")
-            f.write(f"Maximum: {max_value:.3f} {metric_info['unit']}\n")
-
-            spaced_max_values = get_spaced_max_values(df, 5, timedelta(hours=24))
-            f.write("Top 5 Maximum Values (at least 24 hours apart):\n")
-            for idx, row in spaced_max_values.iterrows():
-                f.write(f"  {idx}: {row['value']:.3f} {metric_info['unit']}\n")
-
-            # You would need to define appropriate alert thresholds for each metric
-            
-            #alert_threshold = 0.7 if metric_name == 'network_throughput' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
-            alert_threshold = 70 if metric_name == 'network_throughput_percentage' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
-            alert_periods = get_alert_periods(df, alert_threshold)
-            if alert_periods:
-                f.write(f"Alert Periods (threshold: {alert_threshold} {metric_info['unit']}):\n")
-                for start, end, max_val in alert_periods:
-                    f.write(f"  {start} to {end}: Max value {max_val:.3f} {metric_info['unit']}\n")
+            if metric_name == "job_specific_availability":
+                job_availabilities = process_job_specific_data(data)
+                f.write("Job-Specific Availability:\n")
+                for job, availability in job_availabilities.items():
+                    f.write(f"  {job}: {availability}\n")
+                f.write("\n")
             else:
-                f.write(f"No alerts triggered (threshold: {alert_threshold} {metric_info['unit']})\n")
+                df = pd.DataFrame(data['data']['result'][0]['values'], columns=['timestamp', 'value'])
+                df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+                df.set_index('timestamp', inplace=True)
+                df['value'] = df['value'].astype(float)
+
+                avg_value = df['value'].mean()
+                max_value = df['value'].max()
+
+                f.write(f"{metric_info['title']}:\n")
+                f.write(f"Average: {avg_value:.3f} {metric_info['unit']}\n")
+                f.write(f"Maximum: {max_value:.3f} {metric_info['unit']}\n")
+
+                spaced_max_values = get_spaced_max_values(df, 5, timedelta(hours=24))
+                f.write("Top 5 Maximum Values (at least 24 hours apart):\n")
+                for idx, row in spaced_max_values.iterrows():
+                    f.write(f"  {idx}: {row['value']:.3f} {metric_info['unit']}\n")
+
+                # You would need to define appropriate alert thresholds for each metric
+                
+                #alert_threshold = 0.7 if metric_name == 'network_throughput' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
+                alert_threshold = 70 if metric_name == 'network_throughput_percentage' else 0.01 if metric_name in ['network_error_rate', 'response_time'] else 99 if metric_name == 'service_availability' else 80 
+                alert_periods = get_alert_periods(df, alert_threshold)
+                if alert_periods:
+                    f.write(f"Alert Periods (threshold: {alert_threshold} {metric_info['unit']}):\n")
+                    for start, end, max_val in alert_periods:
+                        f.write(f"  {start} to {end}: Max value {max_val:.3f} {metric_info['unit']}\n")
+                else:
+                    f.write(f"No alerts triggered (threshold: {alert_threshold} {metric_info['unit']})\n")
 
             f.write("\n")
 
-            plot_metric(df, metric_name, server, metric_info['unit'])
+            if metric_name != "job_specific_availability":
+                plot_metric(df, metric_name, server, metric_info['unit'])
 
         # Query and process alerts
         alert_data = query_alerts(start_time, end_time)

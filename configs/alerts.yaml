@@ -71,23 +71,33 @@ groups:
 
   - alert: ServiceAvailabilityAlert
     expr: |
-      avg_over_time(up{job="your_service_job"}[5m]) * 100 < 99
+      avg(up) by (instance) * 100 < 99
     for: 5m
     labels:
       severity: '{{ if lt $value 95.0 }}critical{{ else }}warning{{ end }}'
     annotations:
-      summary: 'Service Availability Alert for {{ $labels.job }} on {{ $labels.instance }}'
+      summary: 'Service Availability Alert for {{ $labels.instance }}'
+      description: 'Overall service availability for {{ $labels.instance }} is {{ $value | printf "%.2f" }}% over the last 5 minutes'
+
+  - alert: JobSpecificAvailabilityAlert
+    expr: |
+      avg(up) by (job, instance) * 100 < 99
+    for: 5m
+    labels:
+      severity: '{{ if lt $value 95.0 }}critical{{ else }}warning{{ end }}'
+    annotations:
+      summary: 'Job-Specific Availability Alert for {{ $labels.job }} on {{ $labels.instance }}'
       description: 'Service availability for {{ $labels.job }} on {{ $labels.instance }} is {{ $value | printf "%.2f" }}% over the last 5 minutes'
 
   - alert: ResponseTimeAlert
     expr: |
-      histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="your_service_job"}[5m])) by (le, instance)) > 2
+      avg(avg_over_time(scrape_duration_seconds[5m])) by (instance) > 2
     for: 5m
     labels:
       severity: '{{ if gt $value 5.0 }}critical{{ else }}warning{{ end }}'
     annotations:
-      summary: 'Response Time Alert for {{ $labels.job }} on {{ $labels.instance }}'
-      description: '95th percentile response time for {{ $labels.job }} on {{ $labels.instance }} is {{ $value | printf "%.2f" }} seconds over the last 5 minutes'
+      summary: 'Response Time Alert for {{ $labels.instance }}'
+      description: 'Average response time for {{ $labels.instance }} is {{ $value | printf "%.2f" }} seconds over the last 5 minutes'
 
   - alert: ApplicationErrorRateAlert
     expr: |
