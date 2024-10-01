@@ -1,5 +1,5 @@
 services:
-  # Generate fake traces...
+  # this is what is run in the clients
   k6-tracing:
     image: ghcr.io/grafana/xk6-client-tracing:v0.0.2
     container_name: fake_tracing
