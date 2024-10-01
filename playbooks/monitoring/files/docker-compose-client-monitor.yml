@@ -15,7 +15,7 @@ services:
         loki-url: "http://209.97.142.146:3100/loki/api/v1/push"
         loki-external-labels: "job=fake_tracing,environment=production,host=client-server" # ${HOSTNAME}"
 
-  # Test logger service
+# Test logger service
 #  test-logger:
 #    image: busybox
 #    container_name: test_logger
@@ -29,8 +29,8 @@ services:
   version_logger:
     image: busybox
     container_name: version_logger
-    #command: /bin/sh -c "while true; do echo 'Test log entry from first_test at $$(date)'; sleep 5; done"
-    command: /bin/sh -c "while true; do echo 'k6-tracing version: $(docker run --rm ghcr.io/grafana/xk6-client-tracing:v0.0.2 k6 version)'; sleep 10; done"
+    #command: /bin/sh -c "while true; do echo 'Test log entry from first_test at $$(date)'; sleep 5; done" # if something breaks re-add the ":" after 'k6-tracing version
+    command: /bin/sh -c "while true; do echo 'k6-tracing version $(docker run --rm ghcr.io/grafana/xk6-client-tracing:v0.0.2 k6 version)'; sleep 10; done"
     logging:
       driver: loki
       options:
