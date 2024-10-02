@@ -41,7 +41,7 @@ storage:
     wal:
       path: /tmp/tempo/wal             # where to store the the wal locally
     local:
-      path: /data/tempo/blocks             #chaanged form /tmp/tempo/blocks
+      path: /tmp/tempo/blocks             #chaanged form /tmp/tempo/blocks
 
 
 overrides:
