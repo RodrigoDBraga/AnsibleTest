@@ -11,8 +11,8 @@ scrape_configs:
     scrape_interval: 10s
     static_configs:
       - targets:
-        - '209.97.134.226:4317'  # Replace with actual IP of first client server
-        - '142.93.38.159:4317'  # Replace with actual IP of second client server
+        - '209.97.134.226:4317' 
+        - '142.93.38.159:4317'  
     metrics_path: '/metrics'
     scheme: 'http'
 
@@ -20,8 +20,8 @@ scrape_configs:
     scrape_interval: 10s
     static_configs:
       - targets:
-        - '209.97.134.226:8000'  # Replace with actual IP of first client server
-        - '142.93.38.159:8000'  # Replace with actual IP of second client server
+        - '209.97.134.226:8000'  
+        - '142.93.38.159:8000'  
     metrics_path: '/metrics'
     scheme: 'http'
 
