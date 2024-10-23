@@ -14,7 +14,7 @@ pipeline {
         GIT_REPO = 'https://github.com/RodrigoDBraga/AnsibleTest'
         GIT_BRANCH = 'main'
         //
-        MONITORING_SERVER_IP = '209.97.142.146'
+        MONITORING_SERVER_IP = '161.35.64.89'
         //
     }
     
