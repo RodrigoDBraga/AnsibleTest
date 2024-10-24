@@ -29,7 +29,7 @@
         "pluginVersion": "8.1.5",
         "targets": [
           {
-            "expr": "{job=\"varlogs\",hostname=~\"5.75.190.25\"}",
+            "expr": "{job=\"varlogs\",hostname=~\"161.35.64.89\"}",
             "format": "table",
             "instant": true,
             "interval": "",
