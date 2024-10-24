@@ -44,22 +44,29 @@
     mode: '0755'
 
 - name: Check if Loki Docker plugin is installed
-  command: docker plugin ls --filter name=loki
+  command: docker plugin inspect loki
   register: loki_check
   changed_when: false
-  ignore_errors: yes
+  failed_when: false
 
-- name: Install Loki Docker plugin if not present
+- name: Install or update Loki Docker plugin
   block:
-    - name: Download Loki Docker plugin
+    - name: Install Loki Docker plugin
       command: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-      register: loki_install
+      when: loki_check.rc != 0
 
-    #- name: Enable Loki Docker plugin
-    #  command: docker plugin enable loki
-    #  when: loki_install.changed
+    - name: Update Loki Docker plugin
+      command: docker plugin upgrade loki grafana/loki-docker-driver:latest
+      when: loki_check.rc == 0
 
-  when: loki_check.rc != 0 or 'loki' not in loki_check.stdout
+    - name: Enable Loki Docker plugin
+      command: docker plugin enable loki
+      
+    #- name: Restart Docker service
+    #  systemd:
+    #    name: docker
+    #    state: restarted
+  when: loki_check.rc != 0 or "'true' not in loki_check.stdout"
 
 
 #- name: Copy Docker Compose file for monitoring server
