@@ -55,10 +55,6 @@
       command: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
       when: loki_check.rc != 0
 
-    - name: Update Loki Docker plugin
-      command: docker plugin upgrade loki grafana/loki-docker-driver:latest
-      when: loki_check.rc == 0
-
     - name: Enable Loki Docker plugin
       command: docker plugin enable loki
       
@@ -66,7 +62,7 @@
     #  systemd:
     #    name: docker
     #    state: restarted
-  when: loki_check.rc != 0 or "'true' not in loki_check.stdout"
+  when: loki_check.rc != 0 #or "'true' not in loki_check.stdout"
 
 
 #- name: Copy Docker Compose file for monitoring server
