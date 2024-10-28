@@ -104,6 +104,7 @@ services:
     volumes:
       - /var/log:/var/log
       - ./configs/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
     command: 
       - "-config.file=/etc/promtail/promtail-config.yaml"
       - "-config.expand-env=true"
